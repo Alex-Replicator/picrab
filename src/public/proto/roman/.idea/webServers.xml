@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="70b18f80-0c0b-4cc7-b8e0-8c75392e7bf3" name="g2img.it-one.pro" url="http://185.9.147.100">
+        <fileTransfer rootFolder="/roman" host="185.9.147.100" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

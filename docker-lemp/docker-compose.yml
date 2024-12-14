@@ -1,0 +1,114 @@
+version: '3.8'
+services:
+
+  php:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./bin/php/${PHP_VER}/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_php_${PHP_VER}"
+    environment:
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT}
+      PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE}
+      PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE}
+    volumes:
+      - ${PROJECT_SRC_DIR}:/var/www/html
+      - ${PHP_FPM_CONF_DIR}:/usr/local/etc/php/conf.d
+    networks:
+      - network
+
+  webserver:
+    build:
+      context: .
+      dockerfile: ./bin/webserver/${SERVER_TYPE}/${SERVER_VER}/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_webserver_${SERVER_TYPE}_${SERVER_VER}"
+    restart: unless-stopped
+    depends_on:
+      - php
+    ports:
+      - "${WEBSERVER_HTTP_PORT}:80"
+      - "${WEBSERVER_HTTPS_PORT}:443"
+    volumes:
+      - ${PROJECT_SRC_DIR}:/var/www/html
+      - ${WEBSERVER_CONF_DIR}_${SERVER_TYPE}:/etc/${SERVER_TYPE}/conf.d
+    networks:
+      - network
+
+  database:
+    build:
+      context: .
+      dockerfile: ./bin/${DB_TYPE}/${DB_VER}/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_${DB_TYPE}_${DB_VER}"
+    restart: "always"
+    healthcheck:
+      test: ["CMD-SHELL", "${DB_HEALTHCHECK_CMD}"]
+      interval: 10s
+      retries: 5
+    ports:
+      - "${DB_INTERNAL_PORT}:${DB_EXTERNAL_PORT}"
+    volumes:
+      - ${DB_INITDB_DIR}:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+      - ${DB_CONF_DIR}:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_CHARSET: ${DB_CHARSET}
+    networks:
+      - network
+
+  phpmyadmin:
+    build:
+      context: .
+      dockerfile: ./bin/phpmyadmin/${PMA_VER}/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_phpmyadmin_${PMA_VER}"
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT}
+      PMA_USER: ${PMA_USER}
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      UPLOAD_LIMIT: ${PMA_UPLOAD_LIMIT}
+      MEMORY_LIMIT: ${PMA_MEMORY_LIMIT}
+      MYSQL_CHARSET: ${DB_CHARSET}
+    ports:
+      - "${PMA_APP_UNSECURE_INTERNAL_PORT}:${PMA_APP_UNSECURE_EXTERNAL_PORT}"
+      - "${PMA_APP_SECURE_INTERNAL_PORT}:${PMA_APP_SECURE_EXTERNAL_PORT}"
+    volumes:
+      - ${PMA_CONF_DIR}:/etc/phpmyadmin/conf.d
+    networks:
+      - network
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./bin/php-worker/${PHP_WORKER_VER}/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_worker_${PHP_WORKER_VER}"
+    depends_on:
+      - php
+      - database
+    volumes:
+      - ${PROJECT_SRC_DIR}:/var/www/html
+      - ./config/php-worker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./scripts/worker_watch.sh:/usr/local/bin/worker_watch.sh
+      - ./config/php-worker/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      PHP_MEMORY_LIMIT: ${PHP_WORKER_MEMORY_LIMIT}
+      PHP_UPLOAD_MAX_FILESIZE: ${PHP_WORKER_UPLOAD_MAX_FILESIZE}
+      PHP_POST_MAX_SIZE: ${PHP_WORKER_POST_MAX_SIZE}
+    restart: unless-stopped
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+volumes:
+  db_data:
+    driver: local

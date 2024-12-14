@@ -1,0 +1,29 @@
+{
+  "name": "alexperlicator/picrab",
+  "description": "Автоматизированный сервис для генерации и публикации контента",
+  "type": "project",
+  "require": {
+    "php": "v8.4.1",
+    "vlucas/phpdotenv": "v5.5.0",
+    "phpoffice/phpword": "1.1.0",
+    "ext-pdo": "v8.4.1",
+    "ext-mysqli": "v8.4.1",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Picrab\\": "app/"
+    }
+  },
+  "require-dev": {},
+  "scripts": {
+    "post-install-cmd": [
+      "Composer\\Installer::postInstall"
+    ],
+    "post-update-cmd": [
+      "Composer\\Installer::postUpdate"
+    ]
+  },
+  "minimum-stability": "stable",
+  "license": "MIT"
+}

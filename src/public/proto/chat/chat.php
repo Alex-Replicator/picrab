@@ -18,6 +18,7 @@ $title = $data['title'] ?? $id;
     <title><?=htmlspecialchars($title)?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <style>
         body {
             background: #f8f9fa;
@@ -83,6 +84,24 @@ $title = $data['title'] ?? $id;
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .code-block-wrapper {
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #fff;
+            border: 1px solid #ccc;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            border-radius: 3px;
+            opacity: 0.7;
+        }
+        .copy-button:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -120,17 +139,41 @@ $title = $data['title'] ?? $id;
 </div>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>
-    function renderMessage(el) {
-        el.innerHTML = marked.parse(el.textContent);
+    function addCopyButtonToCodeBlocks(el) {
+        el.querySelectorAll('pre > code').forEach(function(block) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('code-block-wrapper');
+            block.parentNode.replaceWith(wrapper);
+            wrapper.appendChild(block.parentNode.cloneNode(true));
+            wrapper.querySelector('code').replaceWith(block);
+
+            const copyBtn = document.createElement('button');
+            copyBtn.classList.add('copy-button');
+            copyBtn.textContent = 'Copy';
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(block.innerText);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1000);
+            });
+            wrapper.appendChild(copyBtn);
+        });
     }
 
-    // Рендерим уже существующие сообщения
+    function renderMessage(el) {
+        const rawText = el.textContent;
+        el.innerHTML = marked.parse(rawText);
+        el.querySelectorAll('pre code').forEach(function(block) {
+            hljs.highlightElement(block);
+        });
+        addCopyButtonToCodeBlocks(el);
+    }
+
     document.querySelectorAll('.msg-content').forEach(function(el){
         renderMessage(el);
     });
 
-    // Создаем редактор
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
         initialEditType: 'wysiwyg',
@@ -165,31 +208,10 @@ $title = $data['title'] ?? $id;
             const reader = response.body.getReader();
             const textDecoder = new TextDecoder("utf-8");
             let assistantMsg = '';
-            let buffer = '';
             let assistantDiv;
             let assistantContent;
-            let typingQueue = [];
-            let typingInterval = null;
             let done = false;
-            let started = false;
-
-            function startTyping() {
-                if (typingInterval) return;
-                typingInterval = setInterval(() => {
-                    if (typingQueue.length > 0) {
-                        const char = typingQueue.shift();
-                        assistantContent.textContent += char;
-                        messages.scrollTop = messages.scrollHeight;
-                    } else if (done) {
-                        clearInterval(typingInterval);
-                        typingInterval = null;
-                        // Когда закончили печатать все символы, рендерим markdown
-                        renderMessage(assistantContent);
-                        // Прячем индикатор
-                        spinnerContainer.style.display = 'none';
-                    }
-                }, 1);
-            }
+            let buffer = '';
 
             function createAssistantMessage() {
                 if (!assistantDiv) {
@@ -206,9 +228,7 @@ $title = $data['title'] ?? $id;
                 if (line.startsWith('data: ')) {
                     const jsonStr = line.substring(6);
                     if (jsonStr === '[DONE]') {
-                        // Конец сообщения
                         done = true;
-                        // Сохраняем сообщение на сервере после получения
                         fetch('save_assistant_msg.php', {
                             method: 'POST',
                             headers: {'Content-Type':'application/json'},
@@ -216,6 +236,10 @@ $title = $data['title'] ?? $id;
                         });
                         var remain = document.getElementById('remainingCredits');
                         remain.value = parseInt(remain.value,10)-2;
+                        spinnerContainer.style.display = 'none';
+                        if (assistantContent) {
+                            renderMessage(assistantContent);
+                        }
                         return;
                     }
                     try {
@@ -224,13 +248,8 @@ $title = $data['title'] ?? $id;
                         if (delta) {
                             assistantMsg += delta;
                             createAssistantMessage();
-                            for (let i=0; i<delta.length; i++) {
-                                typingQueue.push(delta[i]);
-                            }
-                            if (!started) {
-                                started = true;
-                                startTyping();
-                            }
+                            assistantContent.textContent += delta;
+                            messages.scrollTop = messages.scrollHeight;
                         }
                     } catch(e){}
                 }
@@ -238,15 +257,27 @@ $title = $data['title'] ?? $id;
 
             function processBuffer() {
                 const lines = buffer.split('\n');
-                for (let line of lines) {
-                    if (line.trim() !== '') processLine(line.trim());
+                // Обрабатываем все полные строки, последний элемент может быть неполным
+                // Сохраняем последний элемент обратно в buffer, если он не пустой
+                let incompleteLine = '';
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (i === lines.length - 1 && buffer[buffer.length - 1] !== '\n') {
+                        incompleteLine = line;
+                    } else {
+                        if (line.trim() !== '') processLine(line.trim());
+                    }
                 }
-                buffer = '';
+                buffer = incompleteLine;
             }
 
             function readChunk() {
                 return reader.read().then(({done: streamDone, value}) => {
                     if (streamDone) {
+                        if (buffer.trim() !== '') {
+                            processLine(buffer.trim());
+                            buffer = '';
+                        }
                         return;
                     }
                     buffer += textDecoder.decode(value, {stream:true});
@@ -254,7 +285,7 @@ $title = $data['title'] ?? $id;
                     return readChunk();
                 });
             }
-            readChunk();
+            return readChunk();
         });
     });
 </script>

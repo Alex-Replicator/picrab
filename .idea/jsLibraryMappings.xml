@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{bootstrap, easymde, marked, toastui-editor, toastui-editor-all}" />
+    <file url="PROJECT" libraries="{bootstrap, easymde, highlight.js, marked, toastui-editor, toastui-editor-all}" />
   </component>
 </project>

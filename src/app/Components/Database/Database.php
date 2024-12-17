@@ -1,30 +1,27 @@
 <?php
 namespace Picrab\Components\Database;
 
-class Database{
+class Database
+{
+    private static $instance;
+    private static $dbObject;
 
-    public static mixed $dbObjectName;
-    public static mixed $dbObject;
-
-    public static $instance;
-
-    public static function getInstance($config)
+    public static function getInstance(array $config)
     {
-        if (self::$instance == null){
+        if (self::$instance === null) {
             self::$instance = new self($config);
         }
         return self::$instance;
-
     }
 
     private function __construct(array $config)
     {
-        self::$dbObjectName = "Picrab\\Components\\Database\\".$config['driver']."Database";
-        self::$dbObject = new self::$dbObjectName($config);
-        return self::$dbObject;
+        $class = "Picrab\\Components\\Database\\".$config['driver']."Database";
+        self::$dbObject = new $class($config);
     }
 
-    public static function connect($password){
+    public static function connect(string $password)
+    {
         return self::$dbObject->connect($password);
     }
 
@@ -38,40 +35,15 @@ class Database{
         return self::$dbObject->execute($sql, $params);
     }
 
-    public function getPageContent($id)
+    public function getPageContent(int $id): array|false
     {
-        $query = "SELECT * FROM `hGtv_pages` WHERE `id` = ? LIMIT 1";
-        $params = [];
-        $params[] = $id;
-        $result = self::$dbObject->query($query, $params);
-        if(!$result){
-            return false;
-        }
-        return $result[0];
+        $res = self::$dbObject->query("SELECT * FROM `hGtv_pages` WHERE `id` = ? LIMIT 1", [$id]);
+        return $res[0] ?? false;
     }
 
-    public function getPageType($id){
-        $query = "SELECT `pagetype_id` FROM `hGtv_pages_pagetypes` WHERE `page_id` = ? LIMIT 1";
-        $params = [];
-        $params[] = $id;
-        $result = self::$dbObject->query($query, $params);
-        if(!$result){
-            return false;
-        }
-        return $result[0];
-    }
-
-
-    public function getActiveTheme(): string
+    public function getPageType(int $id): array|false
     {
-        $query = "SELECT `slug` FROM `hGtv_themes` WHERE `active` = ? LIMIT 1";
-        $params = [1];
-        $result = self::$dbObject::query($query, $params);
-        if(!$result[0]['slug'] OR empty($result[0]['slug'])){
-            return 'default';
-        }
-        return $result[0]['slug'];
+        $res = self::$dbObject->query("SELECT `pagetype_id` FROM `hGtv_pages_pagetypes` WHERE `page_id` = ? LIMIT 1", [$id]);
+        return $res[0] ?? false;
     }
-
 }
-

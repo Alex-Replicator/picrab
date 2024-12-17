@@ -3,61 +3,42 @@ namespace Picrab\Core;
 
 class Request
 {
-    private mixed $method;
-    private string|int|array|null|false $uri;
+    private string $method;
+    private string $uri;
     private array $get;
     private array $post;
-    private array|false $headers;
-
-    private $requestConfig ;
+    private array $headers;
 
     public function __construct()
     {
-        $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $this->get = $_GET;
-        $this->post = $_POST;
-        $this->headers = getallheaders();
+        $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $this->uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+        $this->get = $_GET ?? [];
+        $this->post = $_POST ?? [];
+        $this->headers = function_exists('getallheaders') ? getallheaders() : [];
     }
 
-    public function getrequestConfig(): array
-    {
-        $this->requestConfig = [
-            'method' => $this->method,
-            'uri' => $this->uri,
-            'get' => $this->get,
-            'post' => $this->post,
-            'headers' => $this->headers
-        ];
-        return $this->requestConfig;
-    }
-
-    public function setReuqestConfig($requestConfig)
-    {
-        $this->requestConfig = $requestConfig;
-    }
-
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
-    public function getUri()
+    public function getUri(): string
     {
         return $this->uri;
     }
 
-    public function getGet():array
+    public function getGet(): array
     {
         return $this->get;
     }
 
-    public function getPost()
+    public function getPost(): array
     {
         return $this->post;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }

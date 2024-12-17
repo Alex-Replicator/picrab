@@ -1,23 +1,28 @@
 <?php
 namespace Picrab\Components\Renderer;
 
-
-
 class Renderer
 {
+    private string $defaultThemeName;
 
-    public array $pageContent;
-
-
-    public function renderBlock(string $template, array $data = []): string
+    public function __construct(array $config)
     {
-        if (!file_exists($template)) {
+        $this->defaultThemeName = $config['default_theme_name'] ?? 'default';
+    }
+
+    public function renderTemplate(string $templatePath, array $data = []): string
+    {
+        if (!file_exists($templatePath)) {
             return '';
         }
         extract($data);
         ob_start();
-        include $template;
+        include $templatePath;
         return ob_get_clean();
     }
 
+    public function getThemePath(): string
+    {
+        return "/var/www/html/app/Themes/" . $this->defaultThemeName;
+    }
 }

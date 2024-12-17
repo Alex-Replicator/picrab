@@ -1,44 +1,53 @@
 <?php
 namespace Picrab\Core;
 
-$config = require __DIR__."/../config.php";
-$config = Config::getInstance($config)->get();
+use Picrab\Components\Database\Database;
+use Picrab\Components\ModulesManager\ModulesManager;
+use Picrab\Components\Renderer\Renderer;
 
-$helpersDir = $config['core']['base_dir'] . $config['core']['paths']['helpers_dir'];
+$config = require __DIR__."/../config.php";
+Config::getInstance($config);
+
+$helpersDir = __DIR__ . "/helpers/";
 $helpersFiles = scandir($helpersDir);
-foreach ($helpersFiles as $helpersFile){
-    if($helpersFile !== "." && $helpersFile !== ".."){
+foreach ($helpersFiles as $helpersFile) {
+    if ($helpersFile !== "." && $helpersFile !== "..") {
         require_once $helpersDir . $helpersFile;
     }
 }
 
 $request = new Request();
 $response = new Response();
+$router = new RouterBasic($request, $response);
 
+$container = new \stdClass();
+$container->request = $request;
+$container->response = $response;
+$container->router_data = $router->getData();
 
-$config = Config::getInstance($config)->add('router', new RouterBasic($request, $response)->getData());
+$componentsConfig = Config::getInstance()->get()['components'];
+$dbConfig = $componentsConfig['database']['config'];
+$db = Database::getInstance($dbConfig);
+$container->db = $db;
 
-$config = Config::getInstance($config)->add('response', $request->getrequestConfig());
+$rendererConfig = $componentsConfig['renderer']['config'];
+$renderer = new Renderer($rendererConfig);
+$container->renderer = $renderer;
 
-$config = Config::getInstance($config)->add('componentsList', ComponentsManager::getInstance($config)->getAll());
-$config['pageContent'] = $config['componentsList']['database']::getInstance($config)->getPageContent($config['router']['get']['id']);
-if(!$config['pageContent']){
+$modulesManager = new ModulesManager($db);
+$container->modulesManager = $modulesManager;
+
+$pageId = $container->router_data['get']['id'] ?? 1;
+$pageContent = $db->getPageContent($pageId);
+if (!$pageContent) {
     header("location: /index.php?id=404");
+    exit;
 }
-$config = Config::getInstance($config)->add('pageContent', $config['pageContent']);
+$container->pageContent = $pageContent;
+$pageTypeData = $db->getPageType($pageId);
+$pageTypeId = $pageTypeData['pagetype_id'] ?? 1;
+$container->pageTypeId = $pageTypeId;
+$modules = $modulesManager->loadModulesForPageType($pageTypeId);
+$container->modules = $modules;
 
-$config = Config::getInstance($config)->add('modulesList', new $config['componentsList']['modulesManager']($config));
-
-
-
-return  $config;
-
-
-
-
-
-
-
-
-
-
+return $container;

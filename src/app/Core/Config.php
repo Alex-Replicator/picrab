@@ -1,43 +1,38 @@
 <?php
 namespace Picrab\Core;
 
-
 class Config
 {
+    private static $instance;
+    private array $config;
 
-    public mixed $config;
-    public static $instance;
+    private function __construct(array $config)
+    {
+        $this->config = $config;
+    }
 
-    public static function getInstance($config){
-        if(self::$instance === null){
+    public static function getInstance(array $config = []): self
+    {
+        if (self::$instance === null) {
             self::$instance = new self($config);
         }
         return self::$instance;
     }
 
-    private function __construct($config)
-    {
-        $this->config = $config;
-        return $this->get();
-    }
-
-    public function add($key, $value)
-    {
-        $this->config[$key] = $value;
-        return $this->get();
-    }
-
-    public function set(array $config){
-        $this->config = $config;
-        return $this->get();
-    }
-
-    public function get()
+    public function get(): array
     {
         return $this->config;
     }
 
+    public function add(string $key, $value): array
+    {
+        $this->config[$key] = $value;
+        return $this->config;
+    }
 
-
-
+    public function set(array $config): array
+    {
+        $this->config = $config;
+        return $this->config;
+    }
 }

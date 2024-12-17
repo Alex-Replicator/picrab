@@ -4,13 +4,13 @@ function __dd($var, $array = false){
     echo "<div style='background: #f5f5f5; border: 1px solid #ccc; padding: 10px;'><pre>";
     if($array){
         print_r($var);
-     }else{
+    }else{
         var_dump($var);
-     }
+    }
     echo "</pre></div>";
 }
 
-function  __ddd($var){
+function __ddd($var){
     echo "<pre>";
     var_dump($var);
     echo "</pre>";
@@ -31,6 +31,4 @@ function __pe($msg, $exception = false){
     echo $msg;
     echo "</pre></div>";
     return ob_get_clean();
-
-
 }

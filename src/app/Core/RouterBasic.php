@@ -3,41 +3,27 @@ namespace Picrab\Core;
 
 class RouterBasic
 {
-    private $request;
-    private $response;
-
-    private $defaultGet;
-
-    private $defaultMethod;
-
+    private Request $request;
+    private Response $response;
 
     public function __construct(Request $request, Response $response)
     {
-
-        $this->defaultGet = [
-            'type' => '1',
-            'id' => '1',
-            'page' => '1',
-            'action' => '1',
-        ];
-        $this->defaultMethod = 'GET';
         $this->request = $request;
         $this->response = $response;
     }
 
-    public function getData()
+    public function getData(): array
     {
-        $routerMap = [];
-        $routerMap['uri'] = @$this->request->getUri() ?: '/index.php';
-        $routerMap['method'] = $this->request->getMethod() ?: 'GET';
-        $routerMap['get']['type'] = @$this->request->getGet()['type'] ?:  '1';
-        $routerMap['get']['id'] = @$this->request->getGet()['id'] ?: '1';
-        $routerMap['get']['page'] = @$this->request->getGet()['page'] ?: '1';
-        $routerMap['get']['action'] = @$this->request->getGet()['action'] ?: '1';
-
-        return $routerMap;
-
+        $uri = $this->request->getUri() ?: '/index.php';
+        $method = $this->request->getMethod() ?: 'GET';
+        $get = $this->request->getGet();
+        $data = [];
+        $data['uri'] = $uri;
+        $data['method'] = $method;
+        $data['get']['type'] = $get['type'] ?? '1';
+        $data['get']['id'] = $get['id'] ?? '1';
+        $data['get']['page'] = $get['page'] ?? '1';
+        $data['get']['action'] = $get['action'] ?? '1';
+        return $data;
     }
-
-
 }

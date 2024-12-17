@@ -1,4 +1,5 @@
 <?php
+
 namespace Picrab\Components\ModulesManager;
 
 use Picrab\Components\Database\Database;
@@ -28,7 +29,7 @@ INNER JOIN `hGtv_modules` m
 WHERE mp.pagetype_id = ? AND m.active = 1";
         $modulesData = $this->db->query($sql, [$pageTypeId]);
         foreach ($modulesData as $m) {
-            $class = "Picrab\\Modules\\".ucfirst($m['slug'])."\\".ucfirst($m['slug']);
+            $class = "Picrab\\Modules\\" . ucfirst($m['slug']) . "\\" . ucfirst($m['slug']);
             if (class_exists($class)) {
                 $this->modules[$m['slug']] = new $class($this->db);
             }
@@ -40,4 +41,19 @@ WHERE mp.pagetype_id = ? AND m.active = 1";
     {
         return $this->modules[$slug] ?? null;
     }
+
+    public function getAllModules()
+    {
+        $allModules = [];
+        $sql = "SELECT * FROM `hGtv_modules` WHERE is_global = 1 AND active = 1";
+        $modulesData = $this->db->query($sql);
+        foreach ($modulesData as $m) {
+            $class = "Picrab\\Modules\\" . ucfirst($m['slug']) . "\\" . ucfirst($m['slug']);
+            if (class_exists($class)) {
+                $allModules[$m['slug']] = new $class($this->db);
+            }
+        }
+        return $allModules;
+    }
+
 }

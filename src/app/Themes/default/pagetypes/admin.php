@@ -11,6 +11,7 @@
     <?php echo $renderModule('header'); ?>
     <div class="container mt-4">
         <?php echo $content ?? ''; ?>
+        <?php echo $renderModule('auth'); ?>
     </div>
     <?php echo $renderModule('footer'); ?>
 </div>

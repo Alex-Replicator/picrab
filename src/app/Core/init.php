@@ -34,11 +34,6 @@ $container->db = $db;
 
 $componentsConfig['renderer']['config']['current_theme'] = $container->db->getCurrentTheme();
 
-$rendererConfig = $componentsConfig['renderer']['config'];
-
-$renderer = new Renderer($rendererConfig);
-$container->renderer = $renderer;
-
 $modulesManager = new ModulesManager($db);
 $container->modulesManager = $modulesManager;
 
@@ -49,12 +44,20 @@ if (!$pageContent) {
     header("location: /index.php?id=2");
     exit;
 }
+
+$pageAction = $container->router_data['get']['action'] ?? 'view';
+
 $container->pageContent = $pageContent;
 $pageTypeData = $db->getPageType($pageId);
 
 $container->pageTypeId = $pageTypeData['id'] ?? 1;
 $container->pageTypeSlug = $pageTypeData['slug'] ?? 'main';
+$container->pageAction = $pageAction;
 $modules = $modulesManager->loadModulesForPageType($container->pageTypeId);
 $container->modules = $modules;
+
+$rendererConfig = $componentsConfig['renderer']['config'];
+$renderer = new Renderer($rendererConfig);
+$container->renderer = $renderer;
 
 return $container;

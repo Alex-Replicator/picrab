@@ -1,11 +1,11 @@
-<div class="container d-flex align-items-center justify-content-center" style="height:100vh;">
+<div class="container d-flex align-items-center justify-content-center">
     <div class="card shadow-sm" style="max-width: 400px; width:100%;">
         <div class="card-body">
             <h4 class="card-title text-center mb-4">Вход в систему</h4>
             <?php if(!empty($error)): ?>
                 <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
-            <form method="post" action="">
+            <form method="post" action="/index.php?id=3&action=login">
                 <div class="mb-3">
                     <label class="form-label">Логин</label>
                     <input type="text" class="form-control" name="username" required>

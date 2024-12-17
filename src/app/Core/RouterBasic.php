@@ -21,6 +21,7 @@ class RouterBasic
         $data['uri'] = $uri;
         $data['method'] = $method;
         $data['get']['id'] = $get['id'] ?? '1';
+        $data['get']['action'] = $get['action'] ?? 'view';
         return $data;
     }
 }

@@ -6,7 +6,7 @@ class Database
     private static $instance;
     private static $dbObject;
 
-    public static function getInstance(array $config)
+    public static function getInstance(array $config): Database
     {
         if (self::$instance === null) {
             self::$instance = new self($config);
@@ -37,7 +37,7 @@ class Database
 
     public function getPageContent(int $id): array|false
     {
-        $res = self::$dbObject->query("SELECT p.title, p.content, pt.slug 
+        $res = self::$dbObject->query("SELECT p.id, p.title, p.content, pt.slug 
                 FROM hGtv_pages p 
                 INNER JOIN hGtv_pages_pagetypes pp ON p.id = pp.page_id 
                 INNER JOIN hGtv_pagetypes pt ON pp.pagetype_id = pt.id 

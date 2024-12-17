@@ -7,5 +7,6 @@
         <div class="collapse navbar-collapse" id="navbarHeader">
             <?php echo $renderModule('menu'); ?>
         </div>
+        <a href="/index.php?id=1&action=logout">Выйти</a>
     </div>
 </nav>

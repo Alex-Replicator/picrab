@@ -50,6 +50,18 @@ class Database{
         return $result[0];
     }
 
+    public function getPageType($id){
+        $query = "SELECT `pagetype_id` FROM `hGtv_pages_pagetypes` WHERE `page_id` = ? LIMIT 1";
+        $params = [];
+        $params[] = $id;
+        $result = self::$dbObject->query($query, $params);
+        if(!$result){
+            return false;
+        }
+        return $result[0];
+    }
+
+
     public function getActiveTheme(): string
     {
         $query = "SELECT `slug` FROM `hGtv_themes` WHERE `active` = ? LIMIT 1";

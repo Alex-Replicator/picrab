@@ -1,4 +1,10 @@
 <?php
+
+
+use Picrab\Components\Database\Database;
+use Picrab\Components\ModulesManager\ModulesManager;
+use Picrab\Components\Renderer\Renderer;
+
 return [
     'core' => [
         'base_dir' => '/var/www/html',
@@ -19,7 +25,7 @@ return [
     'components' =>[
 
         "database" => [
-            "class" => "Picrab\\Components\\Database\\Database",
+            "class" => Database::class,
             "config" => [
                 'driver' => 'Mysql',
                 "host" => "database",
@@ -33,7 +39,7 @@ return [
         ],
 
         "renderer" => [
-            "class" => "Picrab\\Components\\Renderer\\Renderer",
+            "class" => Renderer::class,
             "config" => [
                 "default_theme_name" => "default"
             ],
@@ -43,7 +49,7 @@ return [
         ],
 
         "modulesManager" => [
-            "class" => "Picrab\\Components\\ModulesManager\\ModulesManager",
+            "class" => ModulesManager::class,
             "config" => [
 
             ],

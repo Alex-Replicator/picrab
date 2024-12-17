@@ -1,15 +1,13 @@
 <?php
 namespace Picrab\Core;
 
-
-
-$config = require_once __DIR__."/../config.php";
+$config = require __DIR__."/../config.php";
 $config = Config::getInstance($config)->get();
 
 $helpersDir = $config['core']['base_dir'] . $config['core']['paths']['helpers_dir'];
 $helpersFiles = scandir($helpersDir);
 foreach ($helpersFiles as $helpersFile){
-    if($helpersFile != "." && $helpersFile != ".."){
+    if($helpersFile !== "." && $helpersFile !== ".."){
         require_once $helpersDir . $helpersFile;
     }
 }
@@ -30,6 +28,9 @@ if(!$config['pageContent']){
 $config = Config::getInstance($config)->add('pageContent', $config['pageContent']);
 
 $config = Config::getInstance($config)->add('modulesList', new $config['componentsList']['modulesManager']($config));
+
+
+
 return  $config;
 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: database:3306
--- Время создания: Дек 14 2024 г., 20:13
+-- Время создания: Дек 17 2024 г., 08:31
 -- Версия сервера: 8.0.40
 -- Версия PHP: 8.2.8
 
@@ -24,37 +24,16 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `G5fx_articles`
---
-
-CREATE TABLE `G5fx_articles` (
-  `id` int NOT NULL,
-  `query` varchar(255) NOT NULL,
-  `filename` varchar(255) NOT NULL,
-  `created_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Дамп данных таблицы `G5fx_articles`
---
-
-INSERT INTO `G5fx_articles` (`id`, `query`, `filename`, `created_at`) VALUES
-(1, 'Пример запроса 1', 'статья-пример-запроса-1.doc', '2024-12-13 19:11:47'),
-(2, 'Пример запроса 2', 'статья-пример-запроса-2.doc', '2024-12-13 19:11:47');
-
--- --------------------------------------------------------
-
---
 -- Структура таблицы `hGtv_modules`
 --
 
 CREATE TABLE `hGtv_modules` (
   `id` int UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `is_global` tinyint(1) NOT NULL,
-  `ver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `config` json NOT NULL,
   `active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -103,9 +82,9 @@ INSERT INTO `hGtv_modules_pagetypes` (`module_id`, `pagetype_id`) VALUES
 --
 
 CREATE TABLE `hGtv_pages` (
-  `id` int NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -119,13 +98,33 @@ INSERT INTO `hGtv_pages` (`id`, `title`, `content`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `hGtv_pages_pagetypes`
+--
+
+CREATE TABLE `hGtv_pages_pagetypes` (
+  `id` int NOT NULL,
+  `page_id` int UNSIGNED NOT NULL,
+  `pagetype_id` int UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Дамп данных таблицы `hGtv_pages_pagetypes`
+--
+
+INSERT INTO `hGtv_pages_pagetypes` (`id`, `page_id`, `pagetype_id`) VALUES
+(1, 1, 1),
+(2, 404, 2);
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `hGtv_pagetypes`
 --
 
 CREATE TABLE `hGtv_pagetypes` (
   `id` int NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_admin` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -148,10 +147,10 @@ INSERT INTO `hGtv_pagetypes` (`id`, `title`, `slug`, `is_admin`) VALUES
 
 CREATE TABLE `hGtv_themes` (
   `id` int NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -166,12 +165,6 @@ INSERT INTO `hGtv_themes` (`id`, `title`, `description`, `ver`, `slug`, `active`
 --
 -- Индексы сохранённых таблиц
 --
-
---
--- Индексы таблицы `G5fx_articles`
---
-ALTER TABLE `G5fx_articles`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `hGtv_modules`
@@ -194,6 +187,14 @@ ALTER TABLE `hGtv_pages`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Индексы таблицы `hGtv_pages_pagetypes`
+--
+ALTER TABLE `hGtv_pages_pagetypes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `page_id` (`page_id`),
+  ADD KEY `pagetype_id` (`pagetype_id`);
+
+--
 -- Индексы таблицы `hGtv_pagetypes`
 --
 ALTER TABLE `hGtv_pagetypes`
@@ -212,12 +213,6 @@ ALTER TABLE `hGtv_themes`
 --
 
 --
--- AUTO_INCREMENT для таблицы `G5fx_articles`
---
-ALTER TABLE `G5fx_articles`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT для таблицы `hGtv_modules`
 --
 ALTER TABLE `hGtv_modules`
@@ -227,7 +222,13 @@ ALTER TABLE `hGtv_modules`
 -- AUTO_INCREMENT для таблицы `hGtv_pages`
 --
 ALTER TABLE `hGtv_pages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=405;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=405;
+
+--
+-- AUTO_INCREMENT для таблицы `hGtv_pages_pagetypes`
+--
+ALTER TABLE `hGtv_pages_pagetypes`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_pagetypes`

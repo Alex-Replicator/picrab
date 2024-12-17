@@ -11,114 +11,250 @@ $credits = $data['credits'] ?? 0;
 $title = $data['title'] ?? $id;
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chat</title>
+    <title><?=htmlspecialchars($title)?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" rel="stylesheet">
     <style>
-        .chat-container { max-width: 600px; margin: 0 auto; }
-        .message { padding: .5rem 1rem; border-radius: .5rem; margin-bottom: .5rem; }
-        .message-user { background: #d1ecf1; align-self: flex-end; }
-        .message-assistant { background: #f8d7da; align-self: flex-start; }
-        .messages { display: flex; flex-direction: column; }
-        #preview { border: 1px solid #ccc; padding: .5rem; min-height: 100px; margin-top: .5rem; background: #fff; }
-        #progressBar { height: 5px; background: #007bff; width: 0%; transition: width 0.2s; }
+        body {
+            background: #f8f9fa;
+        }
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .chat-header {
+            background: #343a40;
+            color: #fff;
+            padding: 1rem;
+        }
+        .chat-header .title {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .message {
+            padding: .5rem 1rem;
+            border-radius: .5rem;
+            margin-bottom: .5rem;
+            word-wrap: break-word;
+        }
+        .message-user {
+            background: #d1ecf1;
+            align-self: flex-end;
+            max-width: 75%;
+        }
+        .message-assistant {
+            background: #f8d7da;
+            align-self: flex-start;
+            max-width: 75%;
+        }
+        .messages {
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-footer {
+            border-top: 1px solid #dee2e6;
+            padding: 1rem;
+            background: #fff;
+        }
+        #spinnerContainer {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: .5rem;
+        }
+        #spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 0.3em solid rgba(0,0,0,0.2);
+            border-top: 0.3em solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-light">
-<div class="container py-5 chat-container">
-    <h1 class="mb-4"><?=htmlspecialchars($title)?></h1>
-    <div class="mb-3"><a href="index.php" class="btn btn-secondary btn-sm">Back to list</a></div>
-    <div class="mb-3">
-        <label class="form-label">Credits:</label>
-        <input type="number" id="creditsInput" class="form-control mb-2" value="<?=htmlspecialchars($credits)?>" readonly>
-        <label class="form-label">Remaining:</label>
-        <input type="number" id="remainingCredits" class="form-control" value="<?=htmlspecialchars($credits)?>" readonly>
+<body>
+<div class="chat-wrapper container py-5">
+    <div class="chat-header d-flex justify-content-between align-items-center">
+        <h1 class="title mb-0"><?=htmlspecialchars($title)?></h1>
+        <div>
+            <a href="index.php" class="btn btn-sm btn-light">Chats</a>
+        </div>
     </div>
-    <div id="messages" class="messages mb-4">
-        <?php foreach($messages as $m): ?>
-            <div class="message <?php echo $m['role']=='user'?'message-user':'message-assistant'; ?>">
-                <div class="msg-content"><?php echo $m['content']; ?></div>
-            </div>
-        <?php endforeach; ?>
+    <div class="chat-body">
+        <div class="mb-3">
+            <label>Credits:</label>
+            <input type="number" id="creditsInput" class="form-control mb-2" value="<?=htmlspecialchars($credits)?>" readonly>
+            <label>Remaining:</label>
+            <input type="number" id="remainingCredits" class="form-control" value="<?=htmlspecialchars($credits)?>" readonly>
+        </div>
+        <div id="messages" class="messages mb-3">
+            <?php foreach($messages as $m): ?>
+                <div class="message <?= $m['role']=='user'?'message-user':'message-assistant'; ?>">
+                    <div class="msg-content"><?= $m['content']; ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div id="spinnerContainer">
+            <div id="spinner"></div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Your message (Markdown):</label>
-        <textarea id="userInput" class="form-control" rows="4"></textarea>
-        <div id="preview"></div>
+    <div class="chat-footer">
+        <div class="d-flex">
+            <div id="editor" style="flex:1;"></div>
+            <button id="sendButton" class="btn btn-primary ms-2">Send</button>
+        </div>
     </div>
-    <form id="chatForm" class="input-group mb-3">
-        <button class="btn btn-primary" type="submit">Send</button>
-    </form>
-    <div id="progressBar"></div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script>
-    function renderAllMessages() {
-        document.querySelectorAll('.msg-content').forEach(function(el){
-            el.innerHTML = marked.parse(el.textContent);
-        });
+    function renderMessage(el) {
+        el.innerHTML = marked.parse(el.textContent);
     }
-    renderAllMessages();
-    document.getElementById('userInput').addEventListener('input', function() {
-        document.getElementById('preview').innerHTML = marked.parse(this.value);
+
+    // Рендерим уже существующие сообщения
+    document.querySelectorAll('.msg-content').forEach(function(el){
+        renderMessage(el);
     });
-    document.getElementById('chatForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var input = document.getElementById('userInput');
-        var msg = input.value.trim();
+
+    // Создаем редактор
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        initialEditType: 'wysiwyg',
+        height: '300px',
+        previewStyle: 'tab'
+    });
+
+    const messages = document.getElementById('messages');
+    const spinnerContainer = document.getElementById('spinnerContainer');
+
+    document.getElementById('sendButton').addEventListener('click', function() {
+        const msg = editor.getMarkdown().trim();
         if(!msg) return;
-        input.value='';
-        document.getElementById('preview').innerHTML='';
-        var messages = document.getElementById('messages');
-        var userMsg = document.createElement('div');
+        editor.setMarkdown('');
+        const userMsg = document.createElement('div');
         userMsg.classList.add('message','message-user');
-        var userMsgContent = document.createElement('div');
+        const userMsgContent = document.createElement('div');
         userMsgContent.classList.add('msg-content');
         userMsgContent.textContent = msg;
         userMsg.appendChild(userMsgContent);
         messages.appendChild(userMsg);
         messages.scrollTop = messages.scrollHeight;
-        renderAllMessages();
-        var progressBar = document.getElementById('progressBar');
-        progressBar.style.width = '0%';
-        progressBar.style.display = 'block';
+        renderMessage(userMsgContent);
+
+        spinnerContainer.style.display = 'flex';
+
         fetch('api.php', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({chat_id:'<?php echo $id; ?>',message:msg})
+            body: JSON.stringify({chat_id:'<?= $id; ?>',message:msg})
         }).then(response => {
             const reader = response.body.getReader();
+            const textDecoder = new TextDecoder("utf-8");
             let assistantMsg = '';
-            function readChunk() {
-                return reader.read().then(({done, value}) => {
-                    if (done) {
-                        progressBar.style.width='0%';
-                        progressBar.style.display='none';
-                        if (assistantMsg) {
-                            var assistantDiv = document.createElement('div');
-                            assistantDiv.classList.add('message','message-assistant');
-                            var assistantContent = document.createElement('div');
-                            assistantContent.classList.add('msg-content');
-                            assistantContent.textContent = assistantMsg;
-                            assistantDiv.appendChild(assistantContent);
-                            messages.appendChild(assistantDiv);
-                            messages.scrollTop = messages.scrollHeight;
-                            renderAllMessages();
-                            var remain = document.getElementById('remainingCredits');
-                            remain.value = parseInt(remain.value,10)-2;
-                        }
+            let buffer = '';
+            let assistantDiv;
+            let assistantContent;
+            let typingQueue = [];
+            let typingInterval = null;
+            let done = false;
+            let started = false;
+
+            function startTyping() {
+                if (typingInterval) return;
+                typingInterval = setInterval(() => {
+                    if (typingQueue.length > 0) {
+                        const char = typingQueue.shift();
+                        assistantContent.textContent += char;
+                        messages.scrollTop = messages.scrollHeight;
+                    } else if (done) {
+                        clearInterval(typingInterval);
+                        typingInterval = null;
+                        // Когда закончили печатать все символы, рендерим markdown
+                        renderMessage(assistantContent);
+                        // Прячем индикатор
+                        spinnerContainer.style.display = 'none';
+                    }
+                }, 1);
+            }
+
+            function createAssistantMessage() {
+                if (!assistantDiv) {
+                    assistantDiv = document.createElement('div');
+                    assistantDiv.classList.add('message','message-assistant');
+                    assistantContent = document.createElement('div');
+                    assistantContent.classList.add('msg-content');
+                    assistantDiv.appendChild(assistantContent);
+                    messages.appendChild(assistantDiv);
+                }
+            }
+
+            function processLine(line) {
+                if (line.startsWith('data: ')) {
+                    const jsonStr = line.substring(6);
+                    if (jsonStr === '[DONE]') {
+                        // Конец сообщения
+                        done = true;
+                        // Сохраняем сообщение на сервере после получения
+                        fetch('save_assistant_msg.php', {
+                            method: 'POST',
+                            headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({chat_id:'<?= $id; ?>',message:assistantMsg})
+                        });
+                        var remain = document.getElementById('remainingCredits');
+                        remain.value = parseInt(remain.value,10)-2;
                         return;
                     }
-                    var chunk = new TextDecoder("utf-8").decode(value);
-                    assistantMsg += chunk;
-                    progressBar.style.width='50%';
+                    try {
+                        const obj = JSON.parse(jsonStr);
+                        const delta = obj.choices[0].delta.content || '';
+                        if (delta) {
+                            assistantMsg += delta;
+                            createAssistantMessage();
+                            for (let i=0; i<delta.length; i++) {
+                                typingQueue.push(delta[i]);
+                            }
+                            if (!started) {
+                                started = true;
+                                startTyping();
+                            }
+                        }
+                    } catch(e){}
+                }
+            }
+
+            function processBuffer() {
+                const lines = buffer.split('\n');
+                for (let line of lines) {
+                    if (line.trim() !== '') processLine(line.trim());
+                }
+                buffer = '';
+            }
+
+            function readChunk() {
+                return reader.read().then(({done: streamDone, value}) => {
+                    if (streamDone) {
+                        return;
+                    }
+                    buffer += textDecoder.decode(value, {stream:true});
+                    processBuffer();
                     return readChunk();
                 });
             }
-            return readChunk();
+            readChunk();
         });
     });
 </script>

@@ -1,16 +1,17 @@
 <?php
 $chatDir = __DIR__ . '/chats';
 if (!file_exists($chatDir)) {
-    mkdir($chatDir, 0777, true);
+    if (!mkdir($chatDir, 0777, true) && !is_dir($chatDir)) {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $chatDir));
+    }
 }
 $configPath = $chatDir . '/config.json';
-
 if (!file_exists($configPath)) {
     file_put_contents($configPath, json_encode([
         'system_prompt' => 'Ты помогаешь мне разрабатывать сервис, используя чистый HTML, CSS, JS, PHP и MySQL. Когда я прошу у тебя коды файлов, мне нужны их полные, максимально завершённые и функциональные версии. Не добавляй комментарии типа // Другие методы по необходимости или // Другие вспомогательные функции по необходимости и не включай документацию. В свободной форме отвечай только тогда, когда я специально попрошу об этом. В остальных случаях — только полные коды файлов.',
         'tokens' => ['sk-dbqbZAuIDdGvcnInnb3R01OGbExYiaEfi0id6LqNOk1bkwK3'],
         'default_credits' => 100
-    ]));
+    ], JSON_THROW_ON_ERROR));
 }
 $config = json_decode(file_get_contents($configPath), true);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ],
             'credits' => $config['default_credits'],
             'title' => $id
-        ]));
+        ], JSON_THROW_ON_ERROR));
         header('Location: chat.php?id=' . urlencode($id));
         exit;
     }
@@ -34,12 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($tokens_list)) {
             $tokens_list = $config['tokens'];
         }
-        file_put_contents($configPath, json_encode([
-            'system_prompt' => $system_prompt,
-            'tokens' => $tokens_list,
-            'default_credits' => $default_credits
-        ]));
-        $config = json_decode(file_get_contents($configPath), true);
+        try {
+            file_put_contents($configPath, json_encode([
+                'system_prompt' => $system_prompt,
+                'tokens' => $tokens_list,
+                'default_credits' => $default_credits
+            ], JSON_THROW_ON_ERROR));
+        } catch (JsonException $e) {}
+        try {
+            $config = json_decode(file_get_contents($configPath), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {}
     }
     if (isset($_POST['action']) && $_POST['action'] === 'rename_chat') {
         $old_id = $_POST['old_id'] ?? '';
@@ -60,11 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $chats = array_filter(scandir($chatDir), function($f){
-    return strpos($f,'.json') !== false && $f !== 'config.json';
+    return str_contains($f, '.json') && $f !== 'config.json';
 });
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -97,7 +102,7 @@ $chats = array_filter(scandir($chatDir), function($f){
     <ul class="list-group">
         <?php foreach($chats as $chatFile):
             $id = basename($chatFile,'.json');
-            $cd = json_decode(file_get_contents($chatDir.'/'.$chatFile),true);
+            $cd = json_decode(file_get_contents($chatDir . '/' . $chatFile), true);
             $title = $cd['title'] ?? $id;
             ?>
             <li class="list-group-item d-flex flex-column">

@@ -1,27 +1,36 @@
 <?php
-$chatId = '';
-$message = '';
+@ini_set('output_buffering', 'off');
+@ini_set('zlib.output_compression', false);
+while (ob_get_level() > 0) {
+    ob_end_flush();
+}
+ob_implicit_flush(true);
+header('Content-Type: text/event-stream');
+header('Cache-Control: no-cache');
+
 $input = json_decode(file_get_contents('php://input'),true);
 $chatId = $input['chat_id'] ?? '';
 $message = $input['message'] ?? '';
 $chatPath = __DIR__ . '/chats/' . $chatId . '.json';
 if (!file_exists($chatPath) || !$message) {
-    header('Content-Type: text/plain');
-    echo '';
+    echo "data: [DONE]\n\n";
     exit;
 }
+
 $data = json_decode(file_get_contents($chatPath),true);
 $configPath = __DIR__ . '/chats/config.json';
 $config = json_decode(file_get_contents($configPath),true);
 $token = $config['tokens'][0] ?? '';
 $data['messages'][] = ['role'=>'user','content'=>$message];
 file_put_contents($chatPath, json_encode($data));
+
 $postData = [
     'model' => 'o1',
     'locale' => 'ru',
     'messages' => $data['messages'],
     'stream' => true
 ];
+
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => 'https://openaio1api.com/v1/chat/completions',
@@ -40,10 +49,6 @@ curl_setopt_array($ch, [
         return strlen($chunk);
     }
 ]);
-header('Content-Type: text/plain');
 ignore_user_abort(true);
-ob_implicit_flush(true);
-@ob_end_flush();
 curl_exec($ch);
 curl_close($ch);
-$assistantMsg = file_get_contents('php://input');

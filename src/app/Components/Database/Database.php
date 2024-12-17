@@ -54,10 +54,10 @@ class Database
         return $res[0] ?? false;
     }
 
-    public function getPageTypeSlug(int $pageTypeId): array|false
+    public function getCurrentTheme(): string|false
     {
-        $res = self::$dbObject->query("SELECT slug FROM hGtv_pagetypes WHERE id = ? LIMIT 1", [$pageTypeId]);
-        return $res[0] ?? false;
+        $res = self::$dbObject->query("SELECT slug FROM hGtv_themes WHERE active = 1 LIMIT 1", []);
+        return $res[0]['slug'] ?? false;
     }
 
 }

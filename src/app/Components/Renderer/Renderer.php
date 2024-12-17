@@ -3,11 +3,11 @@ namespace Picrab\Components\Renderer;
 
 class Renderer
 {
-    private string $defaultThemeName;
+    private string $currentTheme;
 
     public function __construct(array $config)
     {
-        $this->defaultThemeName = $config['default_theme_name'] ?? 'default';
+        $this->currentTheme = $config['current_theme'] ?? $config['default_theme_name'];
     }
 
     public function renderTemplate(string $templatePath, array $data = []): string
@@ -23,6 +23,6 @@ class Renderer
 
     public function getThemePath(): string
     {
-        return "/var/www/html/app/Themes/" . $this->defaultThemeName;
+        return "/var/www/html/app/Themes/" . $this->currentTheme;
     }
 }

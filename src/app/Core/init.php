@@ -32,7 +32,10 @@ $dbConfig = $componentsConfig['database']['config'];
 $db = Database::getInstance($dbConfig);
 $container->db = $db;
 
+$componentsConfig['renderer']['config']['current_theme'] = $container->db->getCurrentTheme();
+
 $rendererConfig = $componentsConfig['renderer']['config'];
+
 $renderer = new Renderer($rendererConfig);
 $container->renderer = $renderer;
 

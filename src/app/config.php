@@ -1,6 +1,7 @@
 <?php
 
 use Picrab\Components\Database\Database;
+use Picrab\Components\FormConstructor\FormConstructor;
 use Picrab\Components\ModulesManager\ModulesManager;
 use Picrab\Components\Renderer\Renderer;
 
@@ -17,7 +18,7 @@ return [
             'modules_dir' => '/app/Modules/',
             'themes_dir' => '/app/Themes/',
             'public_dir' => '/public/',
-            'storage_dir' => '/storage/',
+            'storage_dir' => '/storage/'
         ]
     ],
     'components' => [
@@ -40,6 +41,10 @@ return [
         ],
         'modulesManager' => [
             'class' => ModulesManager::class,
+            'config' => []
+        ],
+        'FormConstructor' =>[
+            'class' => FormConstructor::class,
             'config' => []
         ]
     ]

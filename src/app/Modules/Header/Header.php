@@ -1,15 +1,15 @@
 <?php
 namespace Picrab\Modules\Header;
 
-class Header
+use Picrab\Components\ModulesManager\ModuleInterface;
+
+class Header implements ModuleInterface
 {
-    public function render($renderer)
+    public function render($renderer, $renderModule)
     {
-        __dd($renderer);
-        $template = $renderer->getThemePath() . "/modules/header/header.php";
+        $template = $renderer->getThemePath()."/modules/header/header.php";
         return $renderer->renderTemplate($template, [
             'renderModule' => $renderModule
         ]);
-
     }
 }

@@ -20,10 +20,7 @@ class RouterBasic
         $data = [];
         $data['uri'] = $uri;
         $data['method'] = $method;
-        $data['get']['type'] = $get['type'] ?? '1';
         $data['get']['id'] = $get['id'] ?? '1';
-        $data['get']['page'] = $get['page'] ?? '1';
-        $data['get']['action'] = $get['action'] ?? '1';
         return $data;
     }
 }

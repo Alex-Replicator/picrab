@@ -1,6 +1,7 @@
 <?php
 namespace Picrab\Core;
 
+
 use Picrab\Components\Database\Database;
 use Picrab\Components\ModulesManager\ModulesManager;
 use Picrab\Components\Renderer\Renderer;
@@ -26,6 +27,7 @@ $container->response = $response;
 $container->router_data = $router->getData();
 
 $componentsConfig = Config::getInstance()->get()['components'];
+
 $dbConfig = $componentsConfig['database']['config'];
 $db = Database::getInstance($dbConfig);
 $container->db = $db;
@@ -39,15 +41,17 @@ $container->modulesManager = $modulesManager;
 
 $pageId = $container->router_data['get']['id'] ?? 1;
 $pageContent = $db->getPageContent($pageId);
+
 if (!$pageContent) {
-    header("location: /index.php?id=404");
+    header("location: /index.php?id=2");
     exit;
 }
 $container->pageContent = $pageContent;
 $pageTypeData = $db->getPageType($pageId);
-$pageTypeId = $pageTypeData['pagetype_id'] ?? 1;
-$container->pageTypeId = $pageTypeId;
-$modules = $modulesManager->loadModulesForPageType($pageTypeId);
+
+$container->pageTypeId = $pageTypeData['id'] ?? 1;
+$container->pageTypeSlug = $pageTypeData['slug'] ?? 'main';
+$modules = $modulesManager->loadModulesForPageType($container->pageTypeId);
 $container->modules = $modules;
 
 return $container;

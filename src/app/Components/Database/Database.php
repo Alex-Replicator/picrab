@@ -37,13 +37,27 @@ class Database
 
     public function getPageContent(int $id): array|false
     {
-        $res = self::$dbObject->query("SELECT * FROM `hGtv_pages` WHERE `id` = ? LIMIT 1", [$id]);
+        $res = self::$dbObject->query("SELECT p.title, p.content, pt.slug 
+                FROM hGtv_pages p 
+                INNER JOIN hGtv_pages_pagetypes pp ON p.id = pp.page_id 
+                INNER JOIN hGtv_pagetypes pt ON pp.pagetype_id = pt.id 
+                WHERE p.id = ? LIMIT 1", [$id]);
         return $res[0] ?? false;
     }
 
     public function getPageType(int $id): array|false
     {
-        $res = self::$dbObject->query("SELECT `pagetype_id` FROM `hGtv_pages_pagetypes` WHERE `page_id` = ? LIMIT 1", [$id]);
+        $res = self::$dbObject->query("SELECT pt.id, pt.slug 
+                FROM hGtv_pages_pagetypes pp 
+                INNER JOIN hGtv_pagetypes pt ON pp.pagetype_id = pt.id 
+                WHERE pp.page_id = ? LIMIT 1", [$id]);
         return $res[0] ?? false;
     }
+
+    public function getPageTypeSlug(int $pageTypeId): array|false
+    {
+        $res = self::$dbObject->query("SELECT slug FROM hGtv_pagetypes WHERE id = ? LIMIT 1", [$pageTypeId]);
+        return $res[0] ?? false;
+    }
+
 }

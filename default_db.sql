@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: database:3306
--- Время создания: Дек 18 2024 г., 00:58
+-- Время создания: Дек 19 2024 г., 17:12
 -- Версия сервера: 8.0.40
 -- Версия PHP: 8.2.8
 
@@ -28,12 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `hGtv_form_fields` (
-  `id` int UNSIGNED NOT NULL,
-  `group_id` int UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `settings` json NOT NULL
+                                    `id` int UNSIGNED NOT NULL,
+                                    `group_id` int UNSIGNED NOT NULL,
+                                    `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                    `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                    `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                    `settings` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -41,8 +41,8 @@ CREATE TABLE `hGtv_form_fields` (
 --
 
 INSERT INTO `hGtv_form_fields` (`id`, `group_id`, `name`, `label`, `type`, `settings`) VALUES
-(1, 1, 'subtitle', 'Subtitle', 'text', '{}'),
-(2, 1, 'description', 'Description', 'textarea', '{}');
+                                                                                           (1, 1, 'subtitle', 'Subtitle', 'text', '{}'),
+                                                                                           (2, 1, 'description', 'Description', 'textarea', '{}');
 
 -- --------------------------------------------------------
 
@@ -51,8 +51,8 @@ INSERT INTO `hGtv_form_fields` (`id`, `group_id`, `name`, `label`, `type`, `sett
 --
 
 CREATE TABLE `hGtv_form_groups` (
-  `id` int UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+                                    `id` int UNSIGNED NOT NULL,
+                                    `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -60,7 +60,7 @@ CREATE TABLE `hGtv_form_groups` (
 --
 
 INSERT INTO `hGtv_form_groups` (`id`, `title`) VALUES
-(1, 'Main Page Fields');
+    (1, 'Main Page Fields');
 
 -- --------------------------------------------------------
 
@@ -69,10 +69,10 @@ INSERT INTO `hGtv_form_groups` (`id`, `title`) VALUES
 --
 
 CREATE TABLE `hGtv_form_page_relations` (
-  `id` int UNSIGNED NOT NULL,
-  `page_id` int UNSIGNED NOT NULL,
-  `pagetype_id` int UNSIGNED NOT NULL,
-  `group_id` int UNSIGNED NOT NULL
+                                            `id` int UNSIGNED NOT NULL,
+                                            `page_id` int UNSIGNED NOT NULL,
+                                            `pagetype_id` int UNSIGNED NOT NULL,
+                                            `group_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -80,7 +80,7 @@ CREATE TABLE `hGtv_form_page_relations` (
 --
 
 INSERT INTO `hGtv_form_page_relations` (`id`, `page_id`, `pagetype_id`, `group_id`) VALUES
-(1, 1, 1, 1);
+    (1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -89,10 +89,10 @@ INSERT INTO `hGtv_form_page_relations` (`id`, `page_id`, `pagetype_id`, `group_i
 --
 
 CREATE TABLE `hGtv_form_values` (
-  `id` int UNSIGNED NOT NULL,
-  `field_id` int UNSIGNED NOT NULL,
-  `page_id` int UNSIGNED NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL
+                                    `id` int UNSIGNED NOT NULL,
+                                    `field_id` int UNSIGNED NOT NULL,
+                                    `page_id` int UNSIGNED NOT NULL,
+                                    `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -100,8 +100,8 @@ CREATE TABLE `hGtv_form_values` (
 --
 
 INSERT INTO `hGtv_form_values` (`id`, `field_id`, `page_id`, `value`) VALUES
-(1, 1, 1, 'Welcome to the main page'),
-(2, 2, 1, 'This is a sample description.');
+                                                                          (1, 1, 1, 'Welcome to the main page'),
+                                                                          (2, 2, 1, 'This is a sample description.');
 
 -- --------------------------------------------------------
 
@@ -110,14 +110,14 @@ INSERT INTO `hGtv_form_values` (`id`, `field_id`, `page_id`, `value`) VALUES
 --
 
 CREATE TABLE `hGtv_modules` (
-  `id` int UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime NOT NULL,
-  `is_global` tinyint(1) NOT NULL,
-  `ver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `config` json NOT NULL,
-  `active` tinyint(1) NOT NULL
+                                `id` int UNSIGNED NOT NULL,
+                                `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                `created_at` datetime NOT NULL,
+                                `is_global` tinyint(1) NOT NULL,
+                                `ver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                `config` json NOT NULL,
+                                `active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -125,10 +125,12 @@ CREATE TABLE `hGtv_modules` (
 --
 
 INSERT INTO `hGtv_modules` (`id`, `title`, `slug`, `created_at`, `is_global`, `ver`, `config`, `active`) VALUES
-(1, 'Шапка', 'header', '2024-12-12 03:51:31', 1, '0.0.1', '{}', 1),
-(4, 'Футер', 'footer', '2024-12-12 15:38:43', 1, '0.0.1', '{}', 1),
-(5, 'Меню', 'menu', '2024-12-12 15:38:43', 1, '0.0.1', '{}', 1),
-(6, 'Авторизация', 'auth', '2024-12-17 13:59:18', 1, '0.0.1', '{}', 1);
+                                                                                                             (1, 'Шапка', 'header', '2024-12-12 03:51:31', 1, '0.0.1', '{}', 1),
+                                                                                                             (4, 'Футер', 'footer', '2024-12-12 15:38:43', 1, '0.0.1', '{}', 1),
+                                                                                                             (5, 'Меню', 'menu', '2024-12-12 15:38:43', 1, '0.0.1', '{}', 1),
+                                                                                                             (6, 'Авторизация', 'auth', '2024-12-17 13:59:18', 1, '0.0.1', '{}', 1),
+                                                                                                             (7, 'Сайдбар', 'sidebar', '2024-12-19 16:49:12', 1, '0.0.1', '{}', 1),
+                                                                                                             (8, 'Мета', 'meta', '2024-12-19 16:57:49', 1, '0.0.1', '{}', 1);
 
 -- --------------------------------------------------------
 
@@ -137,8 +139,8 @@ INSERT INTO `hGtv_modules` (`id`, `title`, `slug`, `created_at`, `is_global`, `v
 --
 
 CREATE TABLE `hGtv_modules_pagetypes` (
-  `module_id` int UNSIGNED NOT NULL,
-  `pagetype_id` int NOT NULL
+                                          `module_id` int UNSIGNED NOT NULL,
+                                          `pagetype_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -146,12 +148,12 @@ CREATE TABLE `hGtv_modules_pagetypes` (
 --
 
 INSERT INTO `hGtv_modules_pagetypes` (`module_id`, `pagetype_id`) VALUES
-(1, 1),
-(1, 2),
-(4, 1),
-(4, 2),
-(5, 1),
-(6, 6);
+                                                                      (1, 1),
+                                                                      (1, 2),
+                                                                      (4, 1),
+                                                                      (4, 2),
+                                                                      (5, 1),
+                                                                      (6, 6);
 
 -- --------------------------------------------------------
 
@@ -160,9 +162,9 @@ INSERT INTO `hGtv_modules_pagetypes` (`module_id`, `pagetype_id`) VALUES
 --
 
 CREATE TABLE `hGtv_pages` (
-  `id` int UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL
+                              `id` int UNSIGNED NOT NULL,
+                              `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                              `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -170,10 +172,10 @@ CREATE TABLE `hGtv_pages` (
 --
 
 INSERT INTO `hGtv_pages` (`id`, `title`, `content`) VALUES
-(1, 'Это сайт', '<h1>Это главная</h1>'),
-(2, '404', '<h1>404 страница не найдена</h1>'),
-(3, 'Страница входа', '<h1>Вход в систему</h1>'),
-(4, 'Админ-панель', 'Админ');
+                                                        (1, 'Это сайт', '<h1>Это главная</h1>'),
+                                                        (2, '404', '<h1>404 страница не найдена</h1>'),
+                                                        (3, 'Страница входа', '<h1>Вход в систему</h1>'),
+                                                        (4, 'Админ-панель', '<h1>Админ-панель</h1>');
 
 -- --------------------------------------------------------
 
@@ -182,9 +184,9 @@ INSERT INTO `hGtv_pages` (`id`, `title`, `content`) VALUES
 --
 
 CREATE TABLE `hGtv_pages_pagetypes` (
-  `id` int NOT NULL,
-  `page_id` int UNSIGNED NOT NULL,
-  `pagetype_id` int UNSIGNED NOT NULL
+                                        `id` int NOT NULL,
+                                        `page_id` int UNSIGNED NOT NULL,
+                                        `pagetype_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -192,10 +194,10 @@ CREATE TABLE `hGtv_pages_pagetypes` (
 --
 
 INSERT INTO `hGtv_pages_pagetypes` (`id`, `page_id`, `pagetype_id`) VALUES
-(1, 1, 1),
-(2, 2, 2),
-(3, 3, 6),
-(4, 4, 3);
+                                                                        (1, 1, 1),
+                                                                        (2, 2, 2),
+                                                                        (3, 3, 6),
+                                                                        (4, 4, 3);
 
 -- --------------------------------------------------------
 
@@ -204,10 +206,10 @@ INSERT INTO `hGtv_pages_pagetypes` (`id`, `page_id`, `pagetype_id`) VALUES
 --
 
 CREATE TABLE `hGtv_pagetypes` (
-  `id` int NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_admin` tinyint(1) NOT NULL
+                                  `id` int NOT NULL,
+                                  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                  `is_admin` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -215,12 +217,12 @@ CREATE TABLE `hGtv_pagetypes` (
 --
 
 INSERT INTO `hGtv_pagetypes` (`id`, `title`, `slug`, `is_admin`) VALUES
-(1, 'Главная страница', 'main', 0),
-(2, '404', '404', 0),
-(3, 'Админ-панель', 'admin', 1),
-(4, 'Страница', 'page', 0),
-(5, 'Редактирование', 'update', 1),
-(6, 'Страница входа', 'login', 0);
+                                                                     (1, 'Главная страница', 'main', 0),
+                                                                     (2, '404', '404', 0),
+                                                                     (3, 'Админ-панель', 'admin', 1),
+                                                                     (4, 'Страница', 'page', 0),
+                                                                     (5, 'Редактирование', 'update', 1),
+                                                                     (6, 'Страница входа', 'login', 0);
 
 -- --------------------------------------------------------
 
@@ -229,9 +231,9 @@ INSERT INTO `hGtv_pagetypes` (`id`, `title`, `slug`, `is_admin`) VALUES
 --
 
 CREATE TABLE `hGtv_permissions` (
-  `id` int UNSIGNED NOT NULL,
-  `module_id` int UNSIGNED NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+                                    `id` int UNSIGNED NOT NULL,
+                                    `module_id` int UNSIGNED NOT NULL,
+                                    `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -239,8 +241,8 @@ CREATE TABLE `hGtv_permissions` (
 --
 
 INSERT INTO `hGtv_permissions` (`id`, `module_id`, `description`) VALUES
-(1, 4, 'Доступ к модулю Footer'),
-(2, 5, 'Доступ к модулю Menu');
+                                                                      (1, 4, 'Доступ к модулю Footer'),
+                                                                      (2, 5, 'Доступ к модулю Menu');
 
 -- --------------------------------------------------------
 
@@ -249,12 +251,12 @@ INSERT INTO `hGtv_permissions` (`id`, `module_id`, `description`) VALUES
 --
 
 CREATE TABLE `hGtv_themes` (
-  `id` int NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `active` tinyint(1) NOT NULL
+                               `id` int NOT NULL,
+                               `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                               `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                               `ver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                               `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                               `active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -262,8 +264,8 @@ CREATE TABLE `hGtv_themes` (
 --
 
 INSERT INTO `hGtv_themes` (`id`, `title`, `description`, `ver`, `slug`, `active`) VALUES
-(1, 'PiCrab Default', 'Тема по умолчанию', '0.0.1', 'default', 1),
-(2, 'Metronic', 'Описание темы', '0.0.1', 'Metronic', 0);
+                                                                                      (1, 'PiCrab Default', 'Тема по умолчанию', '0.0.1', 'default', 1),
+                                                                                      (2, 'Metronic', 'Описание темы', '0.0.1', 'Metronic', 0);
 
 -- --------------------------------------------------------
 
@@ -272,10 +274,10 @@ INSERT INTO `hGtv_themes` (`id`, `title`, `description`, `ver`, `slug`, `active`
 --
 
 CREATE TABLE `hGtv_users` (
-  `id` int UNSIGNED NOT NULL,
-  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_root` tinyint(1) NOT NULL DEFAULT '0'
+                              `id` int UNSIGNED NOT NULL,
+                              `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                              `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                              `is_root` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -283,7 +285,7 @@ CREATE TABLE `hGtv_users` (
 --
 
 INSERT INTO `hGtv_users` (`id`, `username`, `password`, `is_root`) VALUES
-(1, 'alex.replicator', '$2a$12$nCFArxUpemAku.7EOREyiuHeifQzM7IYiz7wGPyWvmkQBWVd9oLm2', 1);
+    (1, 'alex.replicator', '$2a$12$nCFArxUpemAku.7EOREyiuHeifQzM7IYiz7wGPyWvmkQBWVd9oLm2', 1);
 
 -- --------------------------------------------------------
 
@@ -292,10 +294,10 @@ INSERT INTO `hGtv_users` (`id`, `username`, `password`, `is_root`) VALUES
 --
 
 CREATE TABLE `hGtv_user_permissions` (
-  `id` int UNSIGNED NOT NULL,
-  `user_id` int UNSIGNED NOT NULL,
-  `module_id` int UNSIGNED NOT NULL,
-  `allowed` tinyint(1) NOT NULL DEFAULT '1'
+                                         `id` int UNSIGNED NOT NULL,
+                                         `user_id` int UNSIGNED NOT NULL,
+                                         `module_id` int UNSIGNED NOT NULL,
+                                         `allowed` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -303,8 +305,23 @@ CREATE TABLE `hGtv_user_permissions` (
 --
 
 INSERT INTO `hGtv_user_permissions` (`id`, `user_id`, `module_id`, `allowed`) VALUES
-(2, 1, 1, 1),
-(3, 1, 2, 1);
+                                                                                  (2, 1, 1, 1),
+                                                                                  (3, 1, 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `hGtv_worker_tasks`
+--
+
+CREATE TABLE `hGtv_worker_tasks` (
+                                     `id` int UNSIGNED NOT NULL,
+                                     `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                     `status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+                                     `payload` json NOT NULL,
+                                     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Индексы сохранённых таблиц
@@ -314,92 +331,98 @@ INSERT INTO `hGtv_user_permissions` (`id`, `user_id`, `module_id`, `allowed`) VA
 -- Индексы таблицы `hGtv_form_fields`
 --
 ALTER TABLE `hGtv_form_fields`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `group_id` (`group_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `group_id` (`group_id`);
 
 --
 -- Индексы таблицы `hGtv_form_groups`
 --
 ALTER TABLE `hGtv_form_groups`
-  ADD PRIMARY KEY (`id`);
+    ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `hGtv_form_page_relations`
 --
 ALTER TABLE `hGtv_form_page_relations`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `group_id` (`group_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `group_id` (`group_id`);
 
 --
 -- Индексы таблицы `hGtv_form_values`
 --
 ALTER TABLE `hGtv_form_values`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `field_id` (`field_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `field_id` (`field_id`);
 
 --
 -- Индексы таблицы `hGtv_modules`
 --
 ALTER TABLE `hGtv_modules`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`);
+    ADD PRIMARY KEY (`id`),
+    ADD UNIQUE KEY `slug` (`slug`);
 
 --
 -- Индексы таблицы `hGtv_modules_pagetypes`
 --
 ALTER TABLE `hGtv_modules_pagetypes`
-  ADD KEY `module_id` (`module_id`),
-  ADD KEY `pagetype_id` (`pagetype_id`);
+    ADD KEY `module_id` (`module_id`),
+    ADD KEY `pagetype_id` (`pagetype_id`);
 
 --
 -- Индексы таблицы `hGtv_pages`
 --
 ALTER TABLE `hGtv_pages`
-  ADD PRIMARY KEY (`id`);
+    ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `hGtv_pages_pagetypes`
 --
 ALTER TABLE `hGtv_pages_pagetypes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `page_id` (`page_id`),
-  ADD KEY `pagetype_id` (`pagetype_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `page_id` (`page_id`),
+    ADD KEY `pagetype_id` (`pagetype_id`);
 
 --
 -- Индексы таблицы `hGtv_pagetypes`
 --
 ALTER TABLE `hGtv_pagetypes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD UNIQUE KEY `title` (`title`);
+    ADD PRIMARY KEY (`id`),
+    ADD UNIQUE KEY `slug` (`slug`),
+    ADD UNIQUE KEY `title` (`title`);
 
 --
 -- Индексы таблицы `hGtv_permissions`
 --
 ALTER TABLE `hGtv_permissions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `module_id` (`module_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `module_id` (`module_id`);
 
 --
 -- Индексы таблицы `hGtv_themes`
 --
 ALTER TABLE `hGtv_themes`
-  ADD PRIMARY KEY (`id`);
+    ADD PRIMARY KEY (`id`);
 
 --
 -- Индексы таблицы `hGtv_users`
 --
 ALTER TABLE `hGtv_users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
+    ADD PRIMARY KEY (`id`),
+    ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Индексы таблицы `hGtv_user_permissions`
 --
 ALTER TABLE `hGtv_user_permissions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `module_id` (`module_id`);
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `module_id` (`module_id`);
+
+--
+-- Индексы таблицы `hGtv_worker_tasks`
+--
+ALTER TABLE `hGtv_worker_tasks`
+    ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -409,73 +432,79 @@ ALTER TABLE `hGtv_user_permissions`
 -- AUTO_INCREMENT для таблицы `hGtv_form_fields`
 --
 ALTER TABLE `hGtv_form_fields`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_form_groups`
 --
 ALTER TABLE `hGtv_form_groups`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_form_page_relations`
 --
 ALTER TABLE `hGtv_form_page_relations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_form_values`
 --
 ALTER TABLE `hGtv_form_values`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_modules`
 --
 ALTER TABLE `hGtv_modules`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_pages`
 --
 ALTER TABLE `hGtv_pages`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_pages_pagetypes`
 --
 ALTER TABLE `hGtv_pages_pagetypes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+    MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_pagetypes`
 --
 ALTER TABLE `hGtv_pagetypes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+    MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_permissions`
 --
 ALTER TABLE `hGtv_permissions`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_themes`
 --
 ALTER TABLE `hGtv_themes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+    MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_users`
 --
 ALTER TABLE `hGtv_users`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_user_permissions`
 --
 ALTER TABLE `hGtv_user_permissions`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT для таблицы `hGtv_worker_tasks`
+--
+ALTER TABLE `hGtv_worker_tasks`
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -485,39 +514,39 @@ ALTER TABLE `hGtv_user_permissions`
 -- Ограничения внешнего ключа таблицы `hGtv_form_fields`
 --
 ALTER TABLE `hGtv_form_fields`
-  ADD CONSTRAINT `hGtv_form_fields_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `hGtv_form_groups` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_form_fields_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `hGtv_form_groups` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `hGtv_form_page_relations`
 --
 ALTER TABLE `hGtv_form_page_relations`
-  ADD CONSTRAINT `hGtv_form_page_relations_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `hGtv_form_groups` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_form_page_relations_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `hGtv_form_groups` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `hGtv_form_values`
 --
 ALTER TABLE `hGtv_form_values`
-  ADD CONSTRAINT `hGtv_form_values_ibfk_1` FOREIGN KEY (`field_id`) REFERENCES `hGtv_form_fields` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_form_values_ibfk_1` FOREIGN KEY (`field_id`) REFERENCES `hGtv_form_fields` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `hGtv_modules_pagetypes`
 --
 ALTER TABLE `hGtv_modules_pagetypes`
-  ADD CONSTRAINT `hGtv_modules_pagetypes_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `hGtv_modules` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `hGtv_modules_pagetypes_ibfk_2` FOREIGN KEY (`pagetype_id`) REFERENCES `hGtv_pagetypes` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_modules_pagetypes_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `hGtv_modules` (`id`) ON DELETE CASCADE,
+    ADD CONSTRAINT `hGtv_modules_pagetypes_ibfk_2` FOREIGN KEY (`pagetype_id`) REFERENCES `hGtv_pagetypes` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `hGtv_permissions`
 --
 ALTER TABLE `hGtv_permissions`
-  ADD CONSTRAINT `hGtv_permissions_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `hGtv_modules` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_permissions_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `hGtv_modules` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `hGtv_user_permissions`
 --
 ALTER TABLE `hGtv_user_permissions`
-  ADD CONSTRAINT `hGtv_user_permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `hGtv_users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `hGtv_user_permissions_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `hGtv_permissions` (`id`) ON DELETE CASCADE;
+    ADD CONSTRAINT `hGtv_user_permissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `hGtv_users` (`id`) ON DELETE CASCADE,
+    ADD CONSTRAINT `hGtv_user_permissions_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `hGtv_permissions` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

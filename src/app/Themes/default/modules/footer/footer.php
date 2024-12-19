@@ -1,5 +1,9 @@
-<footer class="bg-white border-top mt-4">
-    <div class="container py-3">
-        <p class="text-center text-muted mb-0">&copy; Все права защищены 2024 - <?php echo date("Y")?></p>
+<footer>
+    <div class="border-top">
+        <div class="row bg-white">
+            <div class="col-lg-12 p-3">
+                <span>&copy; Все права защищены 2024 - <?php echo date("Y") ?></span>
+            </div>
+        </div>
     </div>
 </footer>

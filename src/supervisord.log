@@ -1,0 +1,11 @@
+2024-12-19 13:35:35,354 INFO Set uid to user 0 succeeded
+2024-12-19 13:35:35,371 INFO supervisord started with pid 1
+2024-12-19 13:35:36,378 INFO spawned: 'worker' with pid 7
+2024-12-19 13:35:37,437 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-19 16:28:08,739 WARN received SIGQUIT indicating exit request
+2024-12-19 16:28:08,752 INFO waiting for worker to die
+2024-12-19 16:28:09,760 WARN stopped: worker (terminated by SIGTERM)
+2024-12-19 16:28:14,660 INFO Set uid to user 0 succeeded
+2024-12-19 16:28:14,670 INFO supervisord started with pid 1
+2024-12-19 16:28:15,676 INFO spawned: 'worker' with pid 7
+2024-12-19 16:28:17,452 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

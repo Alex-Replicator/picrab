@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title><?=$title?></title>
+    <?php echo $modules['meta']->render($renderer, null, [
+        'pageContent' => $pageContent,
+        'db' => $db
+    ]); ?>
 </head>
 <body class="bg-light">
-<div class="container-fluid p-0">
-    <?php echo $renderModule('header'); ?>
-    <div class="container mt-4">
-        <?php echo $content ?? ''; ?>
-        <?php echo $renderModule('auth')?>
+<div class="wrapper mt-5 container bg-white border shadow">
+    <?php echo $modules['header']->render($renderer, null, [
+        'pageContent' => $pageContent,
+        'db' => $db
+    ]); ?>
+    <div class="">
+        <div class="row">
+            <?php echo $modules['sidebar']->render($renderer, null, [
+                'pageContent' => $pageContent,
+                'db' => $db
+            ]); ?>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-white">
+                <div class="content mt-4">
+                    <?=$content?>
+                </div>
+            </main>
+        </div>
     </div>
-    <?php echo $renderModule('footer'); ?>
+    <?php echo $modules['footer']->render($renderer, null, [
+        'pageContent' => $pageContent,
+        'db' => $db
+    ]); ?>
 </div>
+<?php echo $modules['meta']->footer($renderer, null, [
+    'pageContent' => $pageContent,
+    'db' => $db
+]); ?>
 </body>
 </html>

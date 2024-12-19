@@ -12,8 +12,7 @@ class RouterBasic
         $this->response = $response;
     }
 
-    public function getData(): array
-    {
+    public function getData(): array {
         $uri = $this->request->getUri() ?: '/index.php';
         $method = $this->request->getMethod() ?: 'GET';
         $get = $this->request->getGet();

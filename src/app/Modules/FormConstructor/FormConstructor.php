@@ -23,8 +23,11 @@ class FormConstructor implements ModuleInterface {
         $pageTypeId = $this->params['pageContent']['pageTypeID'];
         $fieldsData = $this->formConstructor->getFieldsForPage($pageId, $pageTypeId);
         $template = $this->renderer->getThemePath() . "/modules/formconstructor/form.php";
-        return $this->renderer->renderTemplate($template, [
-            'fieldsData' => $fieldsData
+
+        return $renderer->renderTemplate($template, [
+            'fieldsData' => $fieldsData,
+            'renderModule' => $renderModule,
+            'pageContent' => $params['pageContent'] ?? [], 'db' => $params['db'] ?? null
         ]);
     }
 

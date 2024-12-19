@@ -1,10 +1,12 @@
 <?php
 namespace Picrab\Components\Renderer;
 
-class Renderer {
+class Renderer
+{
     private string $currentTheme;
 
-    public function __construct(array $config) {
+    public function __construct(array $config)
+    {
         $this->currentTheme = $config['current_theme'] ?? $config['default_theme_name'];
     }
 
@@ -19,6 +21,6 @@ class Renderer {
     }
 
     public function getThemePath(): string {
-        return "/var/www/html/app/Themes/" . $this->currentTheme;
+        return __DIR__ . "/../../Themes/" . $this->currentTheme;
     }
 }

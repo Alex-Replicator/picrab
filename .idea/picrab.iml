@@ -23,5 +23,6 @@
     <orderEntry type="library" name="toastui-editor" level="application" />
     <orderEntry type="library" name="toastui-editor-all" level="application" />
     <orderEntry type="library" name="highlight.js" level="application" />
+    <orderEntry type="library" name="bootstrap-icons" level="application" />
   </component>
 </module>

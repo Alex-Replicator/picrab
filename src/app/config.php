@@ -1,10 +1,4 @@
 <?php
-
-use Picrab\Components\Database\Database;
-use Picrab\Components\FormConstructor\FormConstructor;
-use Picrab\Components\ModulesManager\ModulesManager;
-use Picrab\Components\Renderer\Renderer;
-
 return [
     'core' => [
         'base_dir' => '/var/www/html',
@@ -23,7 +17,7 @@ return [
     ],
     'components' => [
         'database' => [
-            'class' => Database::class,
+            'class' => Picrab\Components\Database\Database::class,
             'config' => [
                 'driver' => 'Mysql',
                 'host' => 'database',
@@ -34,17 +28,21 @@ return [
             ]
         ],
         'renderer' => [
-            'class' => Renderer::class,
+            'class' => Picrab\Components\Renderer\Renderer::class,
             'config' => [
                 'default_theme_name' => 'default'
             ]
         ],
         'modulesManager' => [
-            'class' => ModulesManager::class,
+            'class' => Picrab\Components\ModulesManager\ModulesManager::class,
             'config' => []
         ],
-        'FormConstructor' =>[
-            'class' => FormConstructor::class,
+        'FormConstructor' => [
+            'class' => Picrab\Components\FormConstructor\FormConstructor::class,
+            'config' => []
+        ],
+        'taskQueue' => [
+            'class' => Picrab\Components\TaskQueue\TaskQueue::class,
             'config' => []
         ]
     ]

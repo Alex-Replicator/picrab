@@ -1,12 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/index.php?id=1">Site</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <div class="container">
+        <a class="navbar-brand" href="/index.php?id=1">PiCrab</a>
+
         <div class="collapse navbar-collapse" id="navbarHeader">
             <?php echo $renderModule('menu'); ?>
         </div>
-        <a href="/index.php?id=1&action=logout">Выйти</a>
+        <?php echo $renderModule('auth', 'logoutAuthLink'); ?>
+        <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/40" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+            <div class="me-3">
+                <span class="fw-medium">Alex</span>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm">Выйти</button>
+        </div>
     </div>
 </nav>

@@ -2,7 +2,6 @@
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 $container = require __DIR__ . '/../app/Core/init.php';
-
 $renderer = $container->renderer;
 $db = $container->db;
 $pageContent = $container->pageContent;
@@ -37,3 +36,4 @@ echo $renderer->renderTemplate($template, [
     'action' => $pageContent['action'],
     'renderModule' => $renderModule
 ]);
+

@@ -1,4 +1,4 @@
-<form action="index.php?id=3&action=login" method="POST" class="p-4">
+<form action="index.php?id=3&action=login" method="POST" class="mt-4">
     <div class="mb-3">
         <label for="username" class="form-label">Имя пользователя</label>
         <input type="text" class="form-control" id="username" name="username" required>

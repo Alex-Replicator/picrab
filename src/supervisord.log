@@ -9,3 +9,24 @@
 2024-12-19 16:28:14,670 INFO supervisord started with pid 1
 2024-12-19 16:28:15,676 INFO spawned: 'worker' with pid 7
 2024-12-19 16:28:17,452 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-19 22:32:59,253 WARN received SIGQUIT indicating exit request
+2024-12-19 22:32:59,273 INFO waiting for worker to die
+2024-12-19 22:33:00,280 WARN stopped: worker (terminated by SIGTERM)
+2024-12-19 22:33:03,254 INFO Set uid to user 0 succeeded
+2024-12-19 22:33:03,263 INFO supervisord started with pid 1
+2024-12-19 22:33:04,266 INFO spawned: 'worker' with pid 7
+2024-12-19 22:33:05,401 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-19 22:33:21,367 WARN received SIGQUIT indicating exit request
+2024-12-19 22:33:21,368 INFO waiting for worker to die
+2024-12-19 22:33:22,369 WARN stopped: worker (terminated by SIGTERM)
+2024-12-19 22:33:24,092 INFO Set uid to user 0 succeeded
+2024-12-19 22:33:24,098 INFO supervisord started with pid 1
+2024-12-19 22:33:25,103 INFO spawned: 'worker' with pid 8
+2024-12-19 22:33:26,198 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-19 22:34:37,181 WARN received SIGQUIT indicating exit request
+2024-12-19 22:34:37,189 INFO waiting for worker to die
+2024-12-19 22:34:38,191 WARN stopped: worker (terminated by SIGTERM)
+2024-12-19 22:34:39,900 INFO Set uid to user 0 succeeded
+2024-12-19 22:34:39,906 INFO supervisord started with pid 1
+2024-12-19 22:34:40,910 INFO spawned: 'worker' with pid 7
+2024-12-19 22:34:42,044 INFO success: worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

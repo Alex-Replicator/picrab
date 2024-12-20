@@ -12,8 +12,6 @@ $pageContent['pageTypeID'] = $container->pageTypeId;
 $pageContent['pageTypeSlug'] = $container->pageTypeSlug;
 $pageContent['action'] = $container->pageAction;
 
-$modules = $container->modules;
-
 $template = $renderer->getThemePath() . "/pagetypes/" . $pageContent['pageTypeSlug'] . ".php";
 
 echo $renderer->renderTemplate($template, [
@@ -22,9 +20,5 @@ echo $renderer->renderTemplate($template, [
     'content' => $pageContent['content'],
     'pageTypeID' => $pageContent['pageTypeID'],
     'pageTypeSlug' => $pageContent['pageTypeSlug'],
-    'action' => $pageContent['action'],
-    'pageContent' => $pageContent,
-    'modules' => $modules,
-    'db' => $db,
-    'renderer' => $renderer
+    'action' => $pageContent['action']
 ]);

@@ -3,13 +3,11 @@ namespace Picrab\Components\ModulesManager;
 
 use Picrab\Components\Database\Database;
 
-class ModulesManager
-{
+class ModulesManager {
     private Database $db;
     private array $modules = [];
 
-    public function __construct(Database $db)
-    {
+    public function __construct(Database $db) {
         $this->db = $db;
     }
 
@@ -25,8 +23,7 @@ class ModulesManager
         return $this->modules;
     }
 
-    public function getModule(string $slug)
-    {
+    public function getModule(string $slug) {
         return $this->modules[$slug] ?? null;
     }
 

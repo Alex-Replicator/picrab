@@ -2,14 +2,24 @@
 namespace Picrab\Modules\Sidebar;
 
 use Picrab\Components\ModulesManager\ModuleInterface;
+use Picrab\Core\Context;
 
 class Sidebar implements ModuleInterface {
-    public function render($renderer, $renderModule, $params) {
-        $template = $renderer->getThemePath() . "/modules/sidebar/sidebar.php";
-        return $renderer->renderTemplate($template, [
+    protected $context;
+
+    public function __construct($db) {
+    }
+
+    public function setContext(Context $context): void {
+        $this->context = $context;
+    }
+
+    public function render($renderModule = null, $params = []) {
+        $template = $this->context->renderer->getThemePath() . "/modules/sidebar/sidebar.php";
+        return $this->context->renderer->renderTemplate($template, [
             'renderModule' => $renderModule,
-            'pageContent' => $params['pageContent'] ?? [],
-            'db' => $params['db'] ?? null
-        ]);
+            'pageContent' => $this->context->pageContent,
+            'db' => $this->context->db,
+            'modules' => $this->context->modules ]);
     }
 }

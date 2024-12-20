@@ -27,6 +27,14 @@ return [
                 'salt' => 'hGtv_'
             ]
         ],
+        'files' => [
+            'class' => Picrab\Components\Files\Files::class,
+            'config' => [
+                'include_types' => [
+                    'webp', 'png', 'jpg', 'jpeg', 'pdf'
+                ]
+            ]
+        ],
         'renderer' => [
             'class' => Picrab\Components\Renderer\Renderer::class,
             'config' => [
@@ -44,6 +52,6 @@ return [
         'taskQueue' => [
             'class' => Picrab\Components\TaskQueue\TaskQueue::class,
             'config' => []
-        ]
+        ],
     ]
 ];

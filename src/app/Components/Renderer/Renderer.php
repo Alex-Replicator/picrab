@@ -3,17 +3,20 @@ namespace Picrab\Components\Renderer;
 
 class Renderer
 {
-    private string $currentTheme;
+    public string $currentTheme;
+    public array $globalConfig;
 
-    public function __construct(array $config)
+    public function __construct(array $config, $globalConfig = [])
     {
         $this->currentTheme = $config['current_theme'] ?? $config['default_theme_name'];
+        $this->globalConfig = $globalConfig;
     }
 
     public function renderTemplate(string $templatePath, array $data = []): string {
         if (!file_exists($templatePath)) {
             return '';
         }
+        extract($this->globalConfig);
         extract($data);
         ob_start();
         include $templatePath;

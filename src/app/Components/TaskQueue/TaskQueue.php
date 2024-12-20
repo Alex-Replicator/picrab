@@ -11,14 +11,14 @@ class TaskQueue {
     }
 
     public function addTask(string $type, array $payload = []) {
-        $this->db->execute("INSERT INTO tasks (type, status, payload) VALUES (?, ?, ?)", [$type, 'pending', json_encode($payload)]);
+        $this->db->execute("INSERT INTO hGtv_worker_tasks (type, status, payload) VALUES (?, ?, ?)", [$type, 'pending', json_encode($payload)]);
     }
 
     public function getPendingTasks(): array {
-        return $this->db->query("SELECT * FROM tasks WHERE status='pending' ORDER BY id ASC");
+        return $this->db->query("SELECT * FROM hGtv_worker_tasks WHERE status='pending' ORDER BY id ASC");
     }
 
     public function updateTaskStatus(int $id, string $status) {
-        $this->db->execute("UPDATE tasks SET status=? WHERE id=?", [$status, $id]);
+        $this->db->execute("UPDATE hGtv_worker_tasks SET status=? WHERE id=?", [$status, $id]);
     }
 }

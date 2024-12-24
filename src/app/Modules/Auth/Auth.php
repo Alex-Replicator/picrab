@@ -30,9 +30,7 @@ class Auth implements ModuleInterface
     public function __construct($db)
     {
         $this->db = $db;
-        if($this->isAuthenticated()){
-            $this->getUser($this->isAuthenticated());
-        }
+
     }
 
     public function setConfig()
@@ -67,6 +65,8 @@ class Auth implements ModuleInterface
     public function logoutAuthLink($renderModule = null, $params = [])
     {
         $this->dispatch();
+        $userInfo = $this->getUser($this->isAuthenticated());
+
         $view = $this->authCheck ? 'logout' : 'profile';
         $template = $this->context->renderer->getThemePath() . "/modules/auth/" . $view . ".php";
         return $this->context->renderer->renderTemplate($template, ['user' => $this->user]);
@@ -79,16 +79,21 @@ class Auth implements ModuleInterface
         return $this->context->renderer->renderTemplate($template, $params);
     }
 
-    private function getUser($id)
+    private function getUser()
     {
-        $res = $this->db->query("SElECT * FROM `hGtv_users` WHERE `id` = ? LIMIT 1", [$id]);
-        if(!empty($res)){
-            $this->user = [
-                'id' => $res[0]['id'],
-                'login' => $res[0]['username']
-            ];
-            return true;
+        if(!empty($_SESSION)){
+            $id = $_SESSION['auth_user_id'];
+            $res = $this->db->query("SElECT * FROM `hGtv_users` WHERE `id` = ? LIMIT 1", [$id]);
+            if(!empty($res)){
+                $this->user = [
+                    'id' => $res[0]['id'],
+                    'login' => $res[0]['username']
+                ];
+                return true;
+            }
+            return false;
         }
+
         return false;
     }
 
@@ -113,6 +118,9 @@ class Auth implements ModuleInterface
             if(!empty($res) && $res){
                 $dbPassword = $res[0]['password'];
                 if(password_verify($password, $dbPassword)){
+                    $_SESSION = [];
+                    session_destroy();
+                    session_start();
                     $_SESSION['auth_user_id'] = $res[0]['id'];
                     header("Location: index.php?id=".$this->adminMainPageId);
                     exit;

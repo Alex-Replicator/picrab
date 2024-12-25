@@ -3,7 +3,7 @@ namespace Picrab\Core;
 
 class Response
 {
-    private int $statusCode =200;
+    private int $statusCode = 200;
     private array $headers = [];
     private string $body = '';
 
@@ -19,17 +19,24 @@ class Response
         $this->body = $content;
     }
 
-    public function send(): string {
+    public function send(): void {
         http_response_code($this->statusCode);
         foreach ($this->headers as $header => $value) {
             header("$header: $value");
         }
-        return $this->body;
+        echo $this->body;
     }
 
-    public function notFound(string $data = ''): string {
+    public function notFound(string $data = ''): void {
         $this->setStatusCode(404);
         $this->setBody($data);
-        return $this->send();
+        $this->send();
+    }
+
+    public function json(array $data, int $statusCode = 200): void {
+        $this->setStatusCode($statusCode);
+        $this->addHeader('Content-Type', 'application/json');
+        $this->setBody(json_encode($data));
+        $this->send();
     }
 }

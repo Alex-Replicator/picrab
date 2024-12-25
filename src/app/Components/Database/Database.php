@@ -36,7 +36,26 @@ class Database {
     }
 
     public function getCurrentTheme(): string|false {
+        // Попытка получить текущую тему из таблицы настроек
+        $res = self::$dbObject->query("SELECT value FROM hGtv_settings WHERE `key` = 'current_theme' LIMIT 1", []);
+        if (!empty($res)) {
+            return $res[0]['value'];
+        }
+        // Если нет, получить активную тему из таблицы тем
         $res = self::$dbObject->query("SELECT slug FROM hGtv_themes WHERE active = 1 LIMIT 1", []);
         return $res[0]['slug'] ?? false;
+    }
+
+    public function setCurrentTheme(string $themeSlug): bool {
+        // Деактивировать все темы
+        self::$dbObject->execute("UPDATE hGtv_themes SET active = 0", []);
+        // Активировать выбранную тему
+        $result = self::$dbObject->execute("UPDATE hGtv_themes SET active = 1 WHERE slug = ?", [$themeSlug]);
+        if ($result) {
+            // Обновить настройку текущей темы
+            self::$dbObject->execute("INSERT INTO hGtv_settings (`key`, `value`) VALUES ('current_theme', ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)", [$themeSlug]);
+            return true;
+        }
+        return false;
     }
 }

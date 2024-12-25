@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: database:3306
--- Время создания: Дек 19 2024 г., 17:12
+-- Время создания: Дек 24 2024 г., 18:22
 -- Версия сервера: 8.0.40
 -- Версия PHP: 8.2.8
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- База данных: `default_db`
 --
+CREATE DATABASE IF NOT EXISTS `default_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `default_db`;
 
 -- --------------------------------------------------------
 
@@ -285,7 +287,9 @@ CREATE TABLE `hGtv_users` (
 --
 
 INSERT INTO `hGtv_users` (`id`, `username`, `password`, `is_root`) VALUES
-    (1, 'alex.replicator', '$2a$12$nCFArxUpemAku.7EOREyiuHeifQzM7IYiz7wGPyWvmkQBWVd9oLm2', 1);
+                                                                       (1, 'alex.replicator', '$2a$12$nCFArxUpemAku.7EOREyiuHeifQzM7IYiz7wGPyWvmkQBWVd9oLm2', 1),
+                                                                       (2, 'gleb', '$2a$12$YUOx05b0fzHd8Pkn1X5OKOWLILKqY22OHzn1NjzkJIqIkHgparDYG', 0),
+                                                                       (3, 'david', '$2a$12$xRNgc4UQXEb/2oMDcEWsTuV/78D8BFw6JvrghwHjb6Q3R.XOS0ugS', 0);
 
 -- --------------------------------------------------------
 
@@ -322,6 +326,16 @@ CREATE TABLE `hGtv_worker_tasks` (
                                      `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                      `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Дамп данных таблицы `hGtv_worker_tasks`
+--
+
+INSERT INTO `hGtv_worker_tasks` (`id`, `type`, `status`, `payload`, `created_at`, `updated_at`) VALUES
+                                                                                                    (1, 'article_generation', 'completed', '{\"count\": 10}', '2024-12-19 22:20:57', '2024-12-19 22:34:57'),
+                                                                                                    (2, 'image_generation', 'completed', '{\"size\": \"1024x768\"}', '2024-12-19 22:20:57', '2024-12-19 22:34:57'),
+                                                                                                    (3, 'article_generation', 'completed', '{\"count\": 10}', '2024-12-19 22:49:08', '2024-12-19 22:49:12'),
+                                                                                                    (4, 'image_generation', 'completed', '{\"size\": \"1024x768\"}', '2024-12-19 22:49:08', '2024-12-19 22:49:12');
 
 --
 -- Индексы сохранённых таблиц
@@ -492,7 +506,7 @@ ALTER TABLE `hGtv_themes`
 -- AUTO_INCREMENT для таблицы `hGtv_users`
 --
 ALTER TABLE `hGtv_users`
-    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `hGtv_user_permissions`
@@ -504,7 +518,7 @@ ALTER TABLE `hGtv_user_permissions`
 -- AUTO_INCREMENT для таблицы `hGtv_worker_tasks`
 --
 ALTER TABLE `hGtv_worker_tasks`
-    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+    MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц

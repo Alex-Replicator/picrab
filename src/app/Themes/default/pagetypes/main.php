@@ -11,8 +11,12 @@
             <?php echo $modules['sidebar']->render(); ?>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-white">
                 <div class="content mt-4">
-                    <?=$content?>
-                    <?php echo 'Session destroyed: ' . (empty($_SESSION) ? 'Yes' : 'No'); ?>
+                    <?php if (isset($modules['FormConstructor'])): ?>
+                        <?php echo $modules['FormConstructor']->render(); ?>
+                    <?php else: ?>
+                        <!-- Вы можете что-то вывести, если FormConstructor недоступен -->
+                        <p class="text-muted">Модуль FormConstructor не загружен для этой страницы.</p>
+                    <?php endif; ?>
                 </div>
             </main>
         </div>

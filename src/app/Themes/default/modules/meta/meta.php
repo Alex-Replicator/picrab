@@ -5,5 +5,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
+<link rel="stylesheet" href="<?=$this->globalConfig['themeAssets'];?>css/style.css">
 <link rel="icon" href="<?=$this->globalConfig['themeAssets'];?>images/logo.webp">
 <title><?=$pageContent['title']?></title>

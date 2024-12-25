@@ -5,14 +5,9 @@ if (!file_exists($chatDir)) {
         throw new \RuntimeException(sprintf('Directory "%s" was not created', $chatDir));
     }
 }
+
 $configPath = $chatDir . '/config.json';
-if (!file_exists($configPath)) {
-    file_put_contents($configPath, json_encode([
-        'system_prompt' => 'Ты помогаешь мне разрабатывать сервис, используя чистый HTML, CSS, JS, PHP и MySQL. Когда я прошу у тебя коды файлов, мне нужны их полные, максимально завершённые и функциональные версии. Не добавляй комментарии типа // Другие методы по необходимости или // Другие вспомогательные функции по необходимости и не включай документацию. В свободной форме отвечай только тогда, когда я специально попрошу об этом. В остальных случаях — только полные коды файлов.',
-        'tokens' => ['sk-dbqbZAuIDdGvcnInnb3R01OGbExYiaEfi0id6LqNOk1bkwK3'],
-        'default_credits' => 100
-    ], JSON_THROW_ON_ERROR));
-}
+
 $config = json_decode(file_get_contents($configPath), true);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'new_chat') {

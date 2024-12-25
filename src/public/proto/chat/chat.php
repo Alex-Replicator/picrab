@@ -176,7 +176,7 @@ $title = $data['title'] ?? $id;
 
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
-        initialEditType: 'wysiwyg',
+        initialEditType: 'markdown',
         height: '300px',
         previewStyle: 'tab'
     });
@@ -257,8 +257,6 @@ $title = $data['title'] ?? $id;
 
             function processBuffer() {
                 const lines = buffer.split('\n');
-                // Обрабатываем все полные строки, последний элемент может быть неполным
-                // Сохраняем последний элемент обратно в buffer, если он не пустой
                 let incompleteLine = '';
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];

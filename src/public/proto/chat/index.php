@@ -5,9 +5,7 @@ if (!file_exists($chatDir)) {
         throw new \RuntimeException(sprintf('Directory "%s" was not created', $chatDir));
     }
 }
-
 $configPath = $chatDir . '/config.json';
-
 $config = json_decode(file_get_contents($configPath), true);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'new_chat') {
@@ -16,30 +14,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'messages' => [
                 ['role' => 'system', 'content' => $config['system_prompt']]
             ],
-            'credits' => $config['default_credits'],
             'title' => $id
         ], JSON_THROW_ON_ERROR));
         header('Location: chat.php?id=' . urlencode($id));
         exit;
     }
     if (isset($_POST['action']) && $_POST['action'] === 'save_config') {
+        $nad_system_prompt = $_POST['nad_system_prompt'] ?? '';
         $system_prompt = $_POST['system_prompt'] ?? '';
         $tokens = $_POST['tokens'] ?? '';
-        $default_credits = (int)($_POST['default_credits'] ?? 100);
         $tokens_list = array_filter(array_map('trim', explode("\n", $tokens)));
         if (empty($tokens_list)) {
             $tokens_list = $config['tokens'];
         }
-        try {
-            file_put_contents($configPath, json_encode([
-                'system_prompt' => $system_prompt,
-                'tokens' => $tokens_list,
-                'default_credits' => $default_credits
-            ], JSON_THROW_ON_ERROR));
-        } catch (JsonException $e) {}
-        try {
-            $config = json_decode(file_get_contents($configPath), true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {}
+        $config['nad_system_prompt'] = $nad_system_prompt;
+        $config['system_prompt'] = $system_prompt;
+        $config['tokens'] = $tokens_list;
+        file_put_contents($configPath, json_encode($config, JSON_THROW_ON_ERROR));
+        $config = json_decode(file_get_contents($configPath), true);
     }
     if (isset($_POST['action']) && $_POST['action'] === 'rename_chat') {
         $old_id = $_POST['old_id'] ?? '';
@@ -72,6 +64,17 @@ $chats = array_filter(scandir($chatDir), function($f){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand d-flex align-items-center" href="index.php">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;">
+                <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            MyChat
+        </a>
+    </div>
+</nav>
 <div class="container py-5">
     <h1 class="mb-4">Chats</h1>
     <form method="post" class="mb-4">
@@ -81,22 +84,22 @@ $chats = array_filter(scandir($chatDir), function($f){
     <form method="post" class="mb-4">
         <input type="hidden" name="action" value="save_config">
         <div class="mb-3">
-            <label class="form-label">System prompt</label>
-            <textarea name="system_prompt" class="form-control" rows="3"><?=htmlspecialchars($config['system_prompt'])?></textarea>
+            <label class="form-label">Nad-system prompt</label>
+            <textarea name="nad_system_prompt" class="form-control" rows="3"><?=htmlspecialchars($config['nad_system_prompt'] ?? '')?></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">System prompt (modifiable by AI)</label>
+            <textarea name="system_prompt" class="form-control" rows="3"><?=htmlspecialchars($config['system_prompt'] ?? '')?></textarea>
         </div>
         <div class="mb-3">
             <label class="form-label">Tokens (one per line)</label>
             <textarea name="tokens" class="form-control" rows="3"><?=htmlspecialchars(implode("\n", $config['tokens']))?></textarea>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Default credits</label>
-            <input type="number" name="default_credits" class="form-control" value="<?=htmlspecialchars($config['default_credits'])?>">
-        </div>
         <button type="submit" class="btn btn-secondary">Save Config</button>
     </form>
     <ul class="list-group">
         <?php foreach($chats as $chatFile):
-            $id = basename($chatFile,'.json');
+            $id = basename($chatFile, '.json');
             $cd = json_decode(file_get_contents($chatDir . '/' . $chatFile), true);
             $title = $cd['title'] ?? $id;
             ?>

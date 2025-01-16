@@ -7,8 +7,20 @@ if (!file_exists($chatPath)) {
 }
 $data = json_decode(file_get_contents($chatPath), true);
 $messages = $data['messages'];
-$credits = $data['credits'] ?? 0;
 $title = $data['title'] ?? $id;
+$configPath = __DIR__ . '/chats/config.json';
+$config = json_decode(file_get_contents($configPath), true);
+$nadSystemPrompt = $config['nad_system_prompt'] ?? '';
+$systemPrompt = $config['system_prompt'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_prompts') {
+    $newNad = $_POST['nad_system_prompt'] ?? '';
+    $newSys = $_POST['system_prompt'] ?? '';
+    $config['nad_system_prompt'] = $newNad;
+    $config['system_prompt'] = $newSys;
+    file_put_contents($configPath, json_encode($config, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+    header("Location: chat.php?id=".urlencode($id));
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -23,44 +35,53 @@ $title = $data['title'] ?? $id;
         body {
             background: #f8f9fa;
         }
-        .chat-wrapper {
+        .container-full {
+            width: 100%;
+            height: calc(100vh - 56px);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+        }
+        .left-panel {
+            width: 33%;
+            border-right: 1px solid #dee2e6;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
-        .chat-header {
-            background: #343a40;
-            color: #fff;
-            padding: 1rem;
-        }
-        .chat-header .title {
-            margin: 0;
-            font-size: 1.25rem;
+        .right-panel {
+            width: 67%;
+            display: flex;
+            flex-direction: column;
         }
         .chat-body {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
         }
+        .messages {
+            display: flex;
+            flex-direction: column;
+        }
         .message {
             padding: .5rem 1rem;
             border-radius: .5rem;
             margin-bottom: .5rem;
             word-wrap: break-word;
+            max-width: 85%;
         }
         .message-user {
             background: #d1ecf1;
             align-self: flex-end;
-            max-width: 75%;
         }
         .message-assistant {
             background: #f8d7da;
             align-self: flex-start;
-            max-width: 75%;
         }
-        .messages {
-            display: flex;
-            flex-direction: column;
+        .message-system {
+            background: #e2e3e5;
+            align-self: center;
+            font-style: italic;
         }
         .chat-footer {
             border-top: 1px solid #dee2e6;
@@ -102,44 +123,92 @@ $title = $data['title'] ?? $id;
         .copy-button:hover {
             opacity: 1;
         }
+        #notification {
+            display: none;
+            background-color: #ffc107;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+        }
     </style>
 </head>
 <body>
-<div class="chat-wrapper container py-5">
-    <div class="chat-header d-flex justify-content-between align-items-center">
-        <h1 class="title mb-0"><?=htmlspecialchars($title)?></h1>
-        <div>
-            <a href="index.php" class="btn btn-sm btn-light">Chats</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand d-flex align-items-center" href="index.php">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;">
+                <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            MyChat
+        </a>
+        <button class="btn btn-outline-light ms-auto" data-bs-toggle="modal" data-bs-target="#promptsModal">
+            View / Edit Prompts
+        </button>
+    </div>
+</nav>
+<div class="container-full">
+    <div class="left-panel">
+        <div class="chat-body d-flex flex-column">
+            <div class="flex-grow-1 d-flex flex-column">
+                <div id="notification"></div>
+                <div id="editor" style="flex:1;"></div>
+            </div>
+            <div class="chat-footer d-flex justify-content-end">
+                <button id="sendButton" class="btn btn-primary">Send</button>
+            </div>
         </div>
     </div>
-    <div class="chat-body">
-        <div class="mb-3">
-            <label>Credits:</label>
-            <input type="number" id="creditsInput" class="form-control mb-2" value="<?=htmlspecialchars($credits)?>" readonly>
-            <label>Remaining:</label>
-            <input type="number" id="remainingCredits" class="form-control" value="<?=htmlspecialchars($credits)?>" readonly>
+    <div class="right-panel">
+        <div class="chat-body">
+            <div id="messages" class="messages mb-3">
+                <?php foreach($messages as $m): ?>
+                    <?php
+                    $r = $m['role'] ?? 'assistant';
+                    $cls = 'message-assistant';
+                    if ($r === 'user') $cls = 'message-user';
+                    if ($r === 'system') $cls = 'message-system';
+                    ?>
+                    <div class="message <?= $cls ?>">
+                        <div class="msg-content"><?= $m['content']; ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div id="spinnerContainer">
+                <div id="spinner"></div>
+            </div>
         </div>
-        <div id="messages" class="messages mb-3">
-            <?php foreach($messages as $m): ?>
-                <div class="message <?= $m['role']=='user'?'message-user':'message-assistant'; ?>">
-                    <div class="msg-content"><?= $m['content']; ?></div>
+    </div>
+</div>
+<div class="modal fade" id="promptsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="post">
+                <input type="hidden" name="action" value="update_prompts">
+                <div class="modal-header">
+                    <h5 class="modal-title">Prompts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            <?php endforeach; ?>
-        </div>
-        <div id="spinnerContainer">
-            <div id="spinner"></div>
-        </div>
-    </div>
-    <div class="chat-footer">
-        <div class="d-flex">
-            <div id="editor" style="flex:1;"></div>
-            <button id="sendButton" class="btn btn-primary ms-2">Send</button>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nad-system Prompt</label>
+                        <textarea name="nad_system_prompt" class="form-control" rows="3"><?=htmlspecialchars($nadSystemPrompt)?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">System Prompt</label>
+                        <textarea name="system_prompt" class="form-control" rows="3"><?=htmlspecialchars($systemPrompt)?></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save & Reload</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function addCopyButtonToCodeBlocks(el) {
         el.querySelectorAll('pre > code').forEach(function(block) {
@@ -148,7 +217,6 @@ $title = $data['title'] ?? $id;
             block.parentNode.replaceWith(wrapper);
             wrapper.appendChild(block.parentNode.cloneNode(true));
             wrapper.querySelector('code').replaceWith(block);
-
             const copyBtn = document.createElement('button');
             copyBtn.classList.add('copy-button');
             copyBtn.textContent = 'Copy';
@@ -160,7 +228,6 @@ $title = $data['title'] ?? $id;
             wrapper.appendChild(copyBtn);
         });
     }
-
     function renderMessage(el) {
         const rawText = el.textContent;
         el.innerHTML = marked.parse(rawText);
@@ -169,21 +236,36 @@ $title = $data['title'] ?? $id;
         });
         addCopyButtonToCodeBlocks(el);
     }
-
     document.querySelectorAll('.msg-content').forEach(function(el){
         renderMessage(el);
     });
-
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
         initialEditType: 'markdown',
         height: '300px',
         previewStyle: 'tab'
     });
-
     const messages = document.getElementById('messages');
     const spinnerContainer = document.getElementById('spinnerContainer');
-
+    const notificationDiv = document.getElementById('notification');
+    function parseSystemUpdate(fullText) {
+        const regex = /=system_update=([\s\S]*?)==system_update=/;
+        const match = fullText.match(regex);
+        if (match) {
+            notificationDiv.textContent = 'System prompt has been updated.';
+            notificationDiv.style.display = 'block';
+            fetch('system_update.php', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({new_prompt: match[1]})
+            });
+            setTimeout(function() {
+                notificationDiv.style.display = 'none';
+            }, 3000);
+            return fullText.replace(regex, '');
+        }
+        return fullText;
+    }
     document.getElementById('sendButton').addEventListener('click', function() {
         const msg = editor.getMarkdown().trim();
         if(!msg) return;
@@ -197,9 +279,7 @@ $title = $data['title'] ?? $id;
         messages.appendChild(userMsg);
         messages.scrollTop = messages.scrollHeight;
         renderMessage(userMsgContent);
-
         spinnerContainer.style.display = 'flex';
-
         fetch('api.php', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
@@ -212,7 +292,6 @@ $title = $data['title'] ?? $id;
             let assistantContent;
             let done = false;
             let buffer = '';
-
             function createAssistantMessage() {
                 if (!assistantDiv) {
                     assistantDiv = document.createElement('div');
@@ -223,21 +302,21 @@ $title = $data['title'] ?? $id;
                     messages.appendChild(assistantDiv);
                 }
             }
-
             function processLine(line) {
                 if (line.startsWith('data: ')) {
                     const jsonStr = line.substring(6);
                     if (jsonStr === '[DONE]') {
                         done = true;
+                        const finalText = parseSystemUpdate(assistantMsg);
+                        assistantMsg = finalText;
                         fetch('save_assistant_msg.php', {
                             method: 'POST',
                             headers: {'Content-Type':'application/json'},
                             body: JSON.stringify({chat_id:'<?= $id; ?>',message:assistantMsg})
                         });
-                        var remain = document.getElementById('remainingCredits');
-                        remain.value = parseInt(remain.value,10)-2;
                         spinnerContainer.style.display = 'none';
                         if (assistantContent) {
+                            assistantContent.textContent = assistantMsg;
                             renderMessage(assistantContent);
                         }
                         return;
@@ -254,7 +333,6 @@ $title = $data['title'] ?? $id;
                     } catch(e){}
                 }
             }
-
             function processBuffer() {
                 const lines = buffer.split('\n');
                 let incompleteLine = '';
@@ -268,7 +346,6 @@ $title = $data['title'] ?? $id;
                 }
                 buffer = incompleteLine;
             }
-
             function readChunk() {
                 return reader.read().then(({done: streamDone, value}) => {
                     if (streamDone) {

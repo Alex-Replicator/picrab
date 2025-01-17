@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     const spinnerContainer = document.getElementById('spinnerContainer');
     const notificationDiv = document.getElementById('notification');
     function parseSystemUpdate(fullText) {
-        const regex = /=system_update=([\s\S]*?)==system_update=/;
+        const regex = /=system_update=([\s\S]*?)=system_update=/;
         const match = fullText.match(regex);
         if (match) {
             notificationDiv.textContent = 'System prompt has been updated.';
